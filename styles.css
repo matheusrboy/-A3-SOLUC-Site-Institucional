@@ -280,7 +280,7 @@ body { background: #050505; }
 .contact .btn-primary:hover { background: linear-gradient(135deg, #dec98c, #bf9651); }
 
 .site-footer { background: #030303; }
-.floating-whatsapp { background: #25D366; border: 1px solid rgba(255,255,255,.10); box-shadow: 0 12px 32px rgba(0,0,0,.42); }
+.floating-whatsapp { bottom: 88px; background: #25D366; border: 1px solid rgba(255,255,255,.10); box-shadow: 0 12px 32px rgba(0,0,0,.42); }
 
 @media (max-width: 900px) {
   .nav-wrap { height: 68px; }
@@ -825,7 +825,7 @@ body { background: #050505; }
 .accessibility-widget {
   position: fixed;
   right: 24px;
-  bottom: 94px;
+  bottom: 24px;
   z-index: 220;
 }
 
@@ -995,7 +995,7 @@ body { background: #050505; }
 @media (max-width: 620px) {
   .accessibility-widget {
     right: 16px;
-    bottom: 86px;
+    bottom: 16px;
   }
 
   .accessibility-trigger {
@@ -1025,5 +1025,12 @@ body { background: #050505; }
 
   .accessibility-action-primary {
     grid-column: 1 / -1;
+  }
+}
+
+
+@media (max-width: 620px) {
+  .floating-whatsapp {
+    bottom: 78px;
   }
 }
