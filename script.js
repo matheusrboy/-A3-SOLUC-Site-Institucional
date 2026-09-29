@@ -35,6 +35,9 @@ document.getElementById('year').textContent = new Date().getFullYear();
 
 // Site language
 let currentLanguage = 'pt';
+const languageWidget = document.getElementById('language-widget');
+const languageTrigger = document.getElementById('language-trigger');
+const languagePanel = document.getElementById('language-panel');
 const originalTextNodes = new WeakMap();
 
 const englishTranslations = new Map(Object.entries({
@@ -164,6 +167,27 @@ const englishTranslations = new Map(Object.entries({
   "Parar": "Stop",
   "Pronto para ouvir.": "Ready to listen.",
   "Este recurso complementa leitores de tela e outras tecnologias assistivas.": "This feature complements screen readers and other assistive technologies.",
+  "Selecionar idioma": "Select language",
+  "Idioma do site": "Website language",
+  "Português": "Portuguese",
+  "Assistente de acessibilidade": "Accessibility assistant",
+  "Ajuste a leitura do site e use o leitor por áudio. As preferências ficam salvas neste navegador.": "Adjust how the site is displayed and use the audio reader. Your preferences are saved in this browser.",
+  "Aumentar texto": "Increase text",
+  "Aumenta um nível por clique": "Increases one level per click",
+  "Diminuir texto": "Decrease text",
+  "Reduz um nível por clique": "Decreases one level per click",
+  "Mais contraste": "Higher contrast",
+  "Reforça a separação visual": "Strengthens visual separation",
+  "Destacar links": "Highlight links",
+  "Sublinha links e ações": "Underlines links and actions",
+  "Fonte legível": "Readable font",
+  "Troca para uma fonte simples": "Switches to a simpler font",
+  "Reduzir movimento": "Reduce motion",
+  "Desativa animações e transições": "Disables animations and transitions",
+  "Leitor por áudio": "Audio reader",
+  "Ouça o conteúdo principal da página. O recurso usa a voz disponível no seu navegador.": "Listen to the main page content using a voice available in your browser.",
+  "Pronto para iniciar a leitura.": "Ready to start reading.",
+  "Restaurar padrão": "Restore defaults",
   "A3 SOLUC — Contabilidade & Soluções Empresariais. Todos os direitos reservados.": "A3 SOLUC — Accounting & Business Solutions. All rights reserved.",
   "Fiscal • Contábil • RH & DP • Paralegal • MEI • IRPF": "Tax • Accounting • HR & Payroll • Corporate • MEI • Income Tax"
 }));
@@ -227,9 +251,9 @@ const translateAttributes = (language) => {
     ['.audience-tags', 'aria-label', en ? 'Clients served' : 'Públicos atendidos'],
     ['.about-approach', 'aria-label', en ? 'How we work' : 'Nosso jeito de atender'],
     ['.footer-brand', 'aria-label', en ? 'A3 SOLUC - back to top' : 'A3 SOLUC - voltar ao topo'],
-    ['#accessibility-trigger', 'aria-label', en ? 'Open accessibility resources' : 'Abrir recursos de acessibilidade'],
-    ['#accessibility-close', 'aria-label', en ? 'Close accessibility resources' : 'Fechar recursos de acessibilidade'],
-    ['.language-control', 'aria-label', en ? 'Website language' : 'Idioma do site'],
+    ['#accessibility-trigger', 'aria-label', en ? 'Open accessibility assistant' : 'Abrir assistente de acessibilidade'],
+    ['#accessibility-close', 'aria-label', en ? 'Close accessibility assistant' : 'Fechar assistente de acessibilidade'],
+    ['#language-trigger', 'aria-label', en ? 'Select language' : 'Selecionar idioma'],
     ['.language-switch', 'aria-label', en ? 'Select language' : 'Selecionar idioma'],
     ['.floating-whatsapp', 'aria-label', en ? 'Talk to A3 SOLUC on WhatsApp' : 'Falar com a A3 SOLUC pelo WhatsApp'],
     ['.map-card iframe', 'title', en ? 'Map of A3 SOLUC' : 'Mapa da A3 SOLUC']
@@ -306,7 +330,21 @@ const applyLanguage = (language, persist = true) => {
 document.querySelectorAll('.language-option').forEach(button => {
   button.addEventListener('click', () => {
     applyLanguage(button.dataset.language);
+    languagePanel?.setAttribute('hidden', '');
+    languageTrigger?.setAttribute('aria-expanded', 'false');
   });
+});
+
+languageTrigger?.addEventListener('click', () => {
+  const willOpen = languagePanel?.hasAttribute('hidden');
+
+  if (willOpen) {
+    languagePanel?.removeAttribute('hidden');
+    languageTrigger?.setAttribute('aria-expanded', 'true');
+  } else {
+    languagePanel?.setAttribute('hidden', '');
+    languageTrigger?.setAttribute('aria-expanded', 'false');
+  }
 });
 
 let savedLanguage = 'pt';
@@ -566,10 +604,123 @@ cnpjReset?.addEventListener('click', () => {
 const accessibilityTrigger = document.getElementById('accessibility-trigger');
 const accessibilityPanel = document.getElementById('accessibility-panel');
 const accessibilityClose = document.getElementById('accessibility-close');
+const accessibilityBackdrop = document.getElementById('accessibility-backdrop');
+const a11yTextUp = document.getElementById('a11y-text-up');
+const a11yTextDown = document.getElementById('a11y-text-down');
+const a11yContrast = document.getElementById('a11y-contrast');
+const a11yLinks = document.getElementById('a11y-links');
+const a11yFont = document.getElementById('a11y-font');
+const a11yMotion = document.getElementById('a11y-motion');
+const a11yReset = document.getElementById('a11y-reset');
 const speakStart = document.getElementById('speak-start');
 const speakPause = document.getElementById('speak-pause');
 const speakStop = document.getElementById('speak-stop');
 const accessibilityStatus = document.getElementById('accessibility-status');
+
+// Accessibility display preferences
+const accessibilityDefaults = {
+  textScale: 1,
+  highContrast: false,
+  highlightLinks: false,
+  readableFont: false,
+  reduceMotion: false
+};
+
+let accessibilityPrefs = { ...accessibilityDefaults };
+
+try {
+  const saved = JSON.parse(localStorage.getItem('a3-accessibility') || '{}');
+  accessibilityPrefs = { ...accessibilityDefaults, ...saved };
+} catch (_) {}
+
+const scalableTextSelector = [
+  'main h1',
+  'main h2',
+  'main h3',
+  'main h4',
+  'main p',
+  'main a',
+  'main button',
+  'main label',
+  'main small',
+  '.site-header .main-nav a',
+  '.site-header .brand-name strong',
+  '.site-header .brand-name small',
+  '.site-footer p',
+  '.site-footer a'
+].join(',');
+
+const captureBaseFontSizes = () => {
+  document.querySelectorAll(scalableTextSelector).forEach(element => {
+    if (!element.dataset.a11yBaseFontSize) {
+      element.dataset.a11yBaseFontSize = String(parseFloat(getComputedStyle(element).fontSize) || 16);
+    }
+  });
+};
+
+const applyTextScale = () => {
+  captureBaseFontSizes();
+  document.querySelectorAll(scalableTextSelector).forEach(element => {
+    const base = parseFloat(element.dataset.a11yBaseFontSize || '16');
+    element.style.fontSize = Math.round(base * accessibilityPrefs.textScale * 100) / 100 + 'px';
+  });
+};
+
+const setPressedState = (button, pressed) => {
+  if (!button) return;
+  button.setAttribute('aria-pressed', String(Boolean(pressed)));
+};
+
+const saveAccessibilityPrefs = () => {
+  try {
+    localStorage.setItem('a3-accessibility', JSON.stringify(accessibilityPrefs));
+  } catch (_) {}
+};
+
+const applyAccessibilityPrefs = () => {
+  document.body.classList.toggle('a11y-high-contrast', accessibilityPrefs.highContrast);
+  document.body.classList.toggle('a11y-link-highlight', accessibilityPrefs.highlightLinks);
+  document.body.classList.toggle('a11y-readable-font', accessibilityPrefs.readableFont);
+  document.documentElement.classList.toggle('a11y-reduce-motion', accessibilityPrefs.reduceMotion);
+
+  setPressedState(a11yContrast, accessibilityPrefs.highContrast);
+  setPressedState(a11yLinks, accessibilityPrefs.highlightLinks);
+  setPressedState(a11yFont, accessibilityPrefs.readableFont);
+  setPressedState(a11yMotion, accessibilityPrefs.reduceMotion);
+
+  applyTextScale();
+};
+
+const updateAccessibilityPreference = (key) => {
+  accessibilityPrefs[key] = !accessibilityPrefs[key];
+  applyAccessibilityPrefs();
+  saveAccessibilityPrefs();
+};
+
+a11yTextUp?.addEventListener('click', () => {
+  accessibilityPrefs.textScale = Math.min(1.3, Math.round((accessibilityPrefs.textScale + 0.1) * 10) / 10);
+  applyTextScale();
+  saveAccessibilityPrefs();
+});
+
+a11yTextDown?.addEventListener('click', () => {
+  accessibilityPrefs.textScale = Math.max(0.9, Math.round((accessibilityPrefs.textScale - 0.1) * 10) / 10);
+  applyTextScale();
+  saveAccessibilityPrefs();
+});
+
+a11yContrast?.addEventListener('click', () => updateAccessibilityPreference('highContrast'));
+a11yLinks?.addEventListener('click', () => updateAccessibilityPreference('highlightLinks'));
+a11yFont?.addEventListener('click', () => updateAccessibilityPreference('readableFont'));
+a11yMotion?.addEventListener('click', () => updateAccessibilityPreference('reduceMotion'));
+
+a11yReset?.addEventListener('click', () => {
+  accessibilityPrefs = { ...accessibilityDefaults };
+  applyAccessibilityPrefs();
+  saveAccessibilityPrefs();
+});
+
+applyAccessibilityPrefs();
 
 const speechSupported =
   typeof window !== 'undefined' &&
@@ -599,14 +750,22 @@ const updateSpeechButtons = () => {
     return;
   }
 
-  if (speakStart) speakStart.disabled = speechReading;
+  if (speakStart) {
+    speakStart.disabled = speechReading;
+    speakStart.innerHTML = '<span aria-hidden="true">▶</span> ' + (currentLanguage === 'en' ? 'Read page' : 'Ouvir página');
+  }
   if (speakPause) {
     speakPause.disabled = !speechReading;
-    speakPause.textContent = speechPaused
-      ? (currentLanguage === 'en' ? 'Resume' : 'Continuar')
-      : (currentLanguage === 'en' ? 'Pause' : 'Pausar');
+    speakPause.innerHTML = '<span aria-hidden="true">Ⅱ</span> ' + (
+      speechPaused
+        ? (currentLanguage === 'en' ? 'Resume' : 'Continuar')
+        : (currentLanguage === 'en' ? 'Pause' : 'Pausar')
+    );
   }
-  if (speakStop) speakStop.disabled = !speechReading;
+  if (speakStop) {
+    speakStop.disabled = !speechReading;
+    speakStop.innerHTML = '<span aria-hidden="true">■</span> ' + (currentLanguage === 'en' ? 'Stop' : 'Parar');
+  }
 };
 
 const loadPreferredVoice = () => {
@@ -792,27 +951,50 @@ const startPageReading = () => {
   }, 180);
 };
 
-accessibilityTrigger?.addEventListener('click', () => {
-  const willOpen = accessibilityPanel?.hasAttribute('hidden');
+const openAccessibilityPanel = () => {
+  languagePanel?.setAttribute('hidden', '');
+  languageTrigger?.setAttribute('aria-expanded', 'false');
+  accessibilityPanel?.removeAttribute('hidden');
+  accessibilityBackdrop?.removeAttribute('hidden');
+  accessibilityTrigger?.setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = 'hidden';
 
-  if (willOpen) {
-    accessibilityPanel.removeAttribute('hidden');
-    accessibilityTrigger.setAttribute('aria-expanded', 'true');
-    setSpeechStatus(
-      currentLanguage === 'en'
-        ? (speechReading ? 'Reading in progress.' : 'Ready to listen.')
-        : (speechReading ? 'Leitura em andamento.' : 'Pronto para ouvir.')
-    );
+  setSpeechStatus(
+    currentLanguage === 'en'
+      ? (speechReading ? 'Reading in progress.' : 'Ready to start reading.')
+      : (speechReading ? 'Leitura em andamento.' : 'Pronto para iniciar a leitura.')
+  );
+
+  accessibilityClose?.focus();
+};
+
+const closeAccessibilityPanel = () => {
+  accessibilityPanel?.setAttribute('hidden', '');
+  accessibilityBackdrop?.setAttribute('hidden', '');
+  accessibilityTrigger?.setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+};
+
+accessibilityTrigger?.addEventListener('click', () => {
+  if (accessibilityPanel?.hasAttribute('hidden')) {
+    openAccessibilityPanel();
   } else {
-    accessibilityPanel?.setAttribute('hidden', '');
-    accessibilityTrigger.setAttribute('aria-expanded', 'false');
+    closeAccessibilityPanel();
   }
 });
 
 accessibilityClose?.addEventListener('click', () => {
-  accessibilityPanel?.setAttribute('hidden', '');
-  accessibilityTrigger?.setAttribute('aria-expanded', 'false');
+  closeAccessibilityPanel();
   accessibilityTrigger?.focus();
+});
+
+accessibilityBackdrop?.addEventListener('click', closeAccessibilityPanel);
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !accessibilityPanel?.hasAttribute('hidden')) {
+    closeAccessibilityPanel();
+    accessibilityTrigger?.focus();
+  }
 });
 
 speakStart?.addEventListener('click', startPageReading);
@@ -860,3 +1042,11 @@ updateSpeechButtons();
 
 // Initialize persisted language after all features are available.
 applyLanguage(savedLanguage, false);
+
+
+document.addEventListener('click', event => {
+  if (!languagePanel || languagePanel.hasAttribute('hidden')) return;
+  if (languageWidget?.contains?.(event.target)) return;
+  languagePanel.setAttribute('hidden', '');
+  languageTrigger?.setAttribute('aria-expanded', 'false');
+});
