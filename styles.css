@@ -142,7 +142,7 @@ button { font: inherit; }
 .about-statement {
   position: relative;
   z-index: 1;
-  margin: 0 0 34px;
+  margin: 0 0 28px;
   color: #f0eee8;
   font-size: clamp(21px, 2vw, 28px);
   line-height: 1.34;
@@ -158,10 +158,10 @@ button { font: inherit; }
   display: grid;
   grid-template-columns: 38px 1fr;
   gap: 18px;
-  padding: 22px 0;
+  padding: 18px 0 14px;
   border-bottom: 1px solid rgba(255,255,255,.09);
 }
-.approach-item:last-child { border-bottom: 0; padding-bottom: 0; }
+.approach-item:last-child { border-bottom: 0; padding-bottom: 2px; }
 .approach-item > span {
   color: var(--gold-light);
   font-size: 10px;
