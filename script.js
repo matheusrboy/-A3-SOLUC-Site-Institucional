@@ -163,7 +163,9 @@ const englishTranslations = new Map(Object.entries({
   "Continuar": "Resume",
   "Parar": "Stop",
   "Pronto para ouvir.": "Ready to listen.",
-  "Este recurso complementa leitores de tela e outras tecnologias assistivas.": "This feature complements screen readers and other assistive technologies."
+  "Este recurso complementa leitores de tela e outras tecnologias assistivas.": "This feature complements screen readers and other assistive technologies.",
+  "A3 SOLUC — Contabilidade & Soluções Empresariais. Todos os direitos reservados.": "A3 SOLUC — Accounting & Business Solutions. All rights reserved.",
+  "Fiscal • Contábil • RH & DP • Paralegal • MEI • IRPF": "Tax • Accounting • HR & Payroll • Corporate • MEI • Income Tax"
 }));
 
 const translateTextNodes = (language) => {
@@ -263,6 +265,22 @@ const updateLanguageControls = () => {
   });
 };
 
+let lastCnpjData = null;
+
+const refreshCnpjLanguage = () => {
+  if (!lastCnpjData) return;
+
+  const statusElement = document.getElementById('cnpj-company-status');
+  const simplesElement = document.getElementById('cnpj-simples');
+  const meiElement = document.getElementById('cnpj-mei');
+  const tasksElement = document.getElementById('cnpj-tasks');
+
+  if (statusElement) statusElement.textContent = translateCompanyStatus(lastCnpjData.descricao_situacao_cadastral);
+  if (simplesElement) simplesElement.textContent = boolLabel(lastCnpjData.opcao_pelo_simples);
+  if (meiElement) meiElement.textContent = boolLabel(lastCnpjData.opcao_pelo_mei);
+  if (tasksElement) tasksElement.innerHTML = buildTasks(lastCnpjData);
+};
+
 const applyLanguage = (language, persist = true) => {
   currentLanguage = language === 'en' ? 'en' : 'pt';
 
@@ -274,6 +292,7 @@ const applyLanguage = (language, persist = true) => {
   translateAttributes(currentLanguage);
   updateLanguageControls();
 
+  if (typeof refreshCnpjLanguage === 'function') refreshCnpjLanguage();
   if (typeof loadPreferredVoice === 'function') loadPreferredVoice();
   if (typeof updateSpeechButtons === 'function') updateSpeechButtons();
 
@@ -340,6 +359,21 @@ const boolLabel = (value) => {
     return value === true ? 'Yes' : value === false ? 'No' : 'Not informed';
   }
   return value === true ? 'Sim' : value === false ? 'Não' : 'Não informado';
+};
+
+const translateCompanyStatus = (status) => {
+  const raw = String(status || '').trim();
+  if (currentLanguage !== 'en') return raw || 'Não informado';
+
+  const statuses = {
+    'ATIVA': 'ACTIVE',
+    'BAIXADA': 'CLOSED',
+    'INAPTA': 'UNFIT',
+    'SUSPENSA': 'SUSPENDED',
+    'NULA': 'VOID'
+  };
+
+  return statuses[raw.toUpperCase()] || raw || 'Not informed';
 };
 
 const escapeHtml = (value = '') =>
@@ -473,11 +507,12 @@ cnpjForm?.addEventListener('submit', async (event) => {
     }
 
     const data = payload.data || payload;
+    lastCnpjData = data;
 
     cnpjResultNumber.textContent = formatCnpj(data.cnpj || normalized);
     companyName.textContent = data.razao_social || (currentLanguage === 'en' ? 'Legal name not informed' : 'Razão social não informada');
     tradeName.textContent = data.nome_fantasia && data.nome_fantasia !== data.razao_social ? data.nome_fantasia : '';
-    companyStatus.textContent = data.descricao_situacao_cadastral || 'Não informado';
+    companyStatus.textContent = translateCompanyStatus(data.descricao_situacao_cadastral);
 
     const active = String(data.descricao_situacao_cadastral || '').toUpperCase() === 'ATIVA';
     companyStatus.classList.toggle('is-active', active);
@@ -493,7 +528,11 @@ cnpjForm?.addEventListener('submit', async (event) => {
     const summary = [
       `CNPJ ${formatted}`,
       data.razao_social ? `(${data.razao_social})` : '',
-      data.descricao_situacao_cadastral ? `- situação ${data.descricao_situacao_cadastral}` : ''
+      data.descricao_situacao_cadastral
+        ? (currentLanguage === 'en'
+            ? `- status ${translateCompanyStatus(data.descricao_situacao_cadastral)}`
+            : `- situação ${data.descricao_situacao_cadastral}`)
+        : ''
     ].filter(Boolean).join(' ');
 
     const message = currentLanguage === 'en'
@@ -722,7 +761,9 @@ const speakNextChunk = () => {
 
 const startPageReading = () => {
   if (!speechSupported) {
-    setSpeechStatus('A leitura em voz alta não está disponível neste navegador.');
+    setSpeechStatus(currentLanguage === 'en'
+      ? 'Read-aloud is not available in this browser.'
+      : 'A leitura em voz alta não está disponível neste navegador.');
     return;
   }
 
