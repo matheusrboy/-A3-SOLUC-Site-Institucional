@@ -237,21 +237,29 @@ const speakPause = document.getElementById('speak-pause');
 const speakStop = document.getElementById('speak-stop');
 const accessibilityStatus = document.getElementById('accessibility-status');
 
-const speechSupported = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+const speechSupported =
+  typeof window !== 'undefined' &&
+  'speechSynthesis' in window &&
+  typeof window.SpeechSynthesisUtterance === 'function';
+
 let speechChunks = [];
 let speechIndex = 0;
 let speechPaused = false;
 let speechReading = false;
 let preferredVoice = null;
+let activeUtterance = null;
+let speechTimer = null;
+
+const setSpeechStatus = (message) => {
+  if (accessibilityStatus) accessibilityStatus.textContent = message;
+};
 
 const updateSpeechButtons = () => {
   if (!speechSupported) {
-    speakStart && (speakStart.disabled = true);
-    speakPause && (speakPause.disabled = true);
-    speakStop && (speakStop.disabled = true);
-    if (accessibilityStatus) {
-      accessibilityStatus.textContent = 'A leitura em voz alta não está disponível neste navegador.';
-    }
+    if (speakStart) speakStart.disabled = true;
+    if (speakPause) speakPause.disabled = true;
+    if (speakStop) speakStop.disabled = true;
+    setSpeechStatus('A leitura em voz alta não está disponível neste navegador.');
     return;
   }
 
@@ -265,16 +273,18 @@ const updateSpeechButtons = () => {
 
 const loadPreferredVoice = () => {
   if (!speechSupported) return;
+
   const voices = window.speechSynthesis.getVoices();
   preferredVoice =
     voices.find(voice => /^pt-BR$/i.test(voice.lang)) ||
     voices.find(voice => /^pt/i.test(voice.lang)) ||
+    voices.find(voice => /portugu/i.test(voice.name)) ||
     null;
 };
 
 if (speechSupported) {
   loadPreferredVoice();
-  window.speechSynthesis.addEventListener?.('voiceschanged', loadPreferredVoice);
+  window.speechSynthesis.onvoiceschanged = loadPreferredVoice;
 }
 
 const getReadablePageText = () => {
@@ -282,18 +292,30 @@ const getReadablePageText = () => {
   if (!main) return '';
 
   const clone = main.cloneNode(true);
-  clone.querySelectorAll('script, style, svg, iframe, form, button, input, [hidden]').forEach(el => el.remove());
 
-  return (clone.innerText || clone.textContent || '')
+  clone
+    .querySelectorAll(
+      'script, style, svg, iframe, form, button, input, textarea, select, [hidden], .floating-whatsapp, .accessibility-widget'
+    )
+    .forEach(el => el.remove());
+
+  return (clone.textContent || '')
     .replace(/\s+/g, ' ')
     .replace(/•/g, ',')
+    .replace(/↗|→/g, '')
     .trim();
 };
 
-const splitSpeechText = (text, maxLength = 220) => {
-  const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
+const splitSpeechText = (text, maxLength = 170) => {
   const chunks = [];
+  const sentences = text.match(/[^.!?;:]+[.!?;:]?|[^.!?;:]+$/g) || [text];
   let current = '';
+
+  const pushCurrent = () => {
+    const clean = current.trim();
+    if (clean) chunks.push(clean);
+    current = '';
+  };
 
   sentences.forEach(sentence => {
     const clean = sentence.trim();
@@ -304,7 +326,7 @@ const splitSpeechText = (text, maxLength = 220) => {
       return;
     }
 
-    if (current) chunks.push(current);
+    pushCurrent();
 
     if (clean.length <= maxLength) {
       current = clean;
@@ -312,31 +334,37 @@ const splitSpeechText = (text, maxLength = 220) => {
     }
 
     const words = clean.split(/\s+/);
-    current = '';
     words.forEach(word => {
       if ((current + ' ' + word).trim().length > maxLength) {
-        if (current) chunks.push(current);
-        current = word;
-      } else {
-        current = (current + ' ' + word).trim();
+        pushCurrent();
       }
+      current = (current + ' ' + word).trim();
     });
   });
 
-  if (current) chunks.push(current);
+  pushCurrent();
   return chunks;
 };
 
+const clearSpeechTimer = () => {
+  if (speechTimer) {
+    clearTimeout(speechTimer);
+    speechTimer = null;
+  }
+};
+
 const finishSpeech = (message = 'Leitura concluída.') => {
+  clearSpeechTimer();
   speechReading = false;
   speechPaused = false;
   speechChunks = [];
   speechIndex = 0;
-  if (accessibilityStatus) accessibilityStatus.textContent = message;
+  activeUtterance = null;
+  setSpeechStatus(message);
   updateSpeechButtons();
 };
 
-const speakCurrentChunk = () => {
+const speakNextChunk = () => {
   if (!speechSupported || !speechReading) return;
 
   if (speechIndex >= speechChunks.length) {
@@ -344,33 +372,82 @@ const speakCurrentChunk = () => {
     return;
   }
 
-  const utterance = new SpeechSynthesisUtterance(speechChunks[speechIndex]);
-  utterance.lang = preferredVoice?.lang || 'pt-BR';
-  if (preferredVoice) utterance.voice = preferredVoice;
-  utterance.rate = 1;
-  utterance.pitch = 1;
-  utterance.volume = 1;
+  const text = speechChunks[speechIndex];
+  activeUtterance = new SpeechSynthesisUtterance(text);
+  activeUtterance.lang = preferredVoice?.lang || 'pt-BR';
+  if (preferredVoice) activeUtterance.voice = preferredVoice;
+  activeUtterance.rate = 0.96;
+  activeUtterance.pitch = 1;
+  activeUtterance.volume = 1;
 
-  utterance.onend = () => {
+  activeUtterance.onstart = () => {
+    setSpeechStatus('Lendo o conteúdo da página…');
+  };
+
+  activeUtterance.onend = () => {
     if (!speechReading) return;
+    activeUtterance = null;
     speechIndex += 1;
-    speakCurrentChunk();
+    speechTimer = setTimeout(speakNextChunk, 80);
   };
 
-  utterance.onerror = event => {
+  activeUtterance.onerror = event => {
     if (event.error === 'canceled' || event.error === 'interrupted') return;
-    finishSpeech('Não foi possível continuar a leitura. Tente novamente.');
+    finishSpeech('Não foi possível reproduzir a leitura. Tente novamente.');
   };
 
-  window.speechSynthesis.speak(utterance);
+  try {
+    window.speechSynthesis.speak(activeUtterance);
+
+    // Alguns navegadores entram em estado pausado sem refletir isso na interface.
+    speechTimer = setTimeout(() => {
+      if (speechReading && !speechPaused && window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+    }, 250);
+  } catch (error) {
+    finishSpeech('Não foi possível iniciar a leitura neste navegador.');
+  }
+};
+
+const startPageReading = () => {
+  if (!speechSupported) {
+    setSpeechStatus('A leitura em voz alta não está disponível neste navegador.');
+    return;
+  }
+
+  const pageText = getReadablePageText();
+  if (!pageText) {
+    setSpeechStatus('Não encontrei conteúdo para ler.');
+    return;
+  }
+
+  clearSpeechTimer();
+  window.speechSynthesis.cancel();
+
+  speechChunks = splitSpeechText(pageText);
+  speechIndex = 0;
+  speechPaused = false;
+  speechReading = true;
+  activeUtterance = null;
+
+  setSpeechStatus('Preparando a leitura…');
+  updateSpeechButtons();
+
+  // Dar um pequeno intervalo depois do cancel evita que Chrome/Safari ignorem a primeira fala.
+  speechTimer = setTimeout(() => {
+    loadPreferredVoice();
+    speakNextChunk();
+  }, 180);
 };
 
 accessibilityTrigger?.addEventListener('click', () => {
   const willOpen = accessibilityPanel?.hasAttribute('hidden');
+
   if (willOpen) {
     accessibilityPanel.removeAttribute('hidden');
     accessibilityTrigger.setAttribute('aria-expanded', 'true');
-    accessibilityClose?.focus();
+    setSpeechStatus(speechReading ? 'Leitura em andamento.' : 'Pronto para ouvir.');
   } else {
     accessibilityPanel?.setAttribute('hidden', '');
     accessibilityTrigger.setAttribute('aria-expanded', 'false');
@@ -383,29 +460,7 @@ accessibilityClose?.addEventListener('click', () => {
   accessibilityTrigger?.focus();
 });
 
-speakStart?.addEventListener('click', () => {
-  if (!speechSupported) return;
-
-  window.speechSynthesis.cancel();
-  const pageText = getReadablePageText();
-
-  if (!pageText) {
-    if (accessibilityStatus) accessibilityStatus.textContent = 'Não encontrei conteúdo para ler.';
-    return;
-  }
-
-  speechChunks = splitSpeechText(pageText);
-  speechIndex = 0;
-  speechPaused = false;
-  speechReading = true;
-
-  if (accessibilityStatus) {
-    accessibilityStatus.textContent = 'Lendo o conteúdo principal da página.';
-  }
-
-  updateSpeechButtons();
-  speakCurrentChunk();
-});
+speakStart?.addEventListener('click', startPageReading);
 
 speakPause?.addEventListener('click', () => {
   if (!speechSupported || !speechReading) return;
@@ -413,11 +468,11 @@ speakPause?.addEventListener('click', () => {
   if (speechPaused) {
     window.speechSynthesis.resume();
     speechPaused = false;
-    if (accessibilityStatus) accessibilityStatus.textContent = 'Leitura retomada.';
+    setSpeechStatus('Leitura retomada.');
   } else {
     window.speechSynthesis.pause();
     speechPaused = true;
-    if (accessibilityStatus) accessibilityStatus.textContent = 'Leitura pausada.';
+    setSpeechStatus('Leitura pausada.');
   }
 
   updateSpeechButtons();
@@ -425,12 +480,24 @@ speakPause?.addEventListener('click', () => {
 
 speakStop?.addEventListener('click', () => {
   if (!speechSupported) return;
+
+  clearSpeechTimer();
   window.speechSynthesis.cancel();
   finishSpeech('Leitura interrompida.');
 });
 
+document.addEventListener('visibilitychange', () => {
+  if (!speechSupported || !speechReading || speechPaused) return;
+
+  if (document.visibilityState === 'visible' && window.speechSynthesis.paused) {
+    window.speechSynthesis.resume();
+  }
+});
+
 window.addEventListener('beforeunload', () => {
-  if (speechSupported) window.speechSynthesis.cancel();
+  if (!speechSupported) return;
+  clearSpeechTimer();
+  window.speechSynthesis.cancel();
 });
 
 updateSpeechButtons();
