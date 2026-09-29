@@ -355,3 +355,67 @@ body { background: #050505; }
   .service-card { min-height: 290px; }
   .result-card { min-height: 220px; }
 }
+
+
+/* CNPJ consultation */
+.cnpj-check { background: #050505; border-top: 1px solid rgba(255,255,255,.06); }
+.cnpj-check-grid { display: grid; grid-template-columns: .88fr 1.12fr; gap: 64px; align-items: start; }
+.cnpj-check-copy > p:not(.eyebrow) { margin: 24px 0 0; color: #999ea3; font-size: 15px; line-height: 1.8; max-width: 560px; }
+.cnpj-trust { margin-top: 28px; display: flex; gap: 14px; align-items: flex-start; max-width: 590px; }
+.demo-badge { flex: 0 0 auto; padding: 7px 9px; border: 1px solid rgba(184,146,79,.23); border-radius: 999px; background: rgba(184,146,79,.08); color: var(--gold-light); font-size: 9px; font-weight: 800; letter-spacing: .10em; white-space: nowrap; }
+.cnpj-trust p { margin: 1px 0 0; color: #777c81; font-size: 11px; line-height: 1.6; }
+.cnpj-form { margin-top: 34px; max-width: 590px; }
+.cnpj-form label { display: block; margin-bottom: 10px; color: #d9d8d4; font-size: 11px; font-weight: 750; }
+.cnpj-input-row { display: flex; gap: 9px; }
+.cnpj-input-row input { min-width: 0; flex: 1; height: 52px; padding: 0 17px; border-radius: 15px; border: 1px solid rgba(255,255,255,.10); outline: 0; background: rgba(255,255,255,.035); color: #f2f1ed; font: inherit; font-size: 15px; letter-spacing: .04em; transition: .2s ease; }
+.cnpj-input-row input:focus { border-color: rgba(184,146,79,.55); box-shadow: 0 0 0 3px rgba(184,146,79,.08); }
+.cnpj-input-row button { min-height: 52px; padding: 0 18px; border: 0; border-radius: 15px; cursor: pointer; background: linear-gradient(135deg, #d6bc7a, #b58a42); color: #0b0b0b; font: inherit; font-size: 12px; font-weight: 800; transition: .2s ease; white-space: nowrap; }
+.cnpj-input-row button:hover { transform: translateY(-1px); }
+.cnpj-input-row button:disabled { opacity: .65; cursor: wait; transform: none; }
+.cnpj-form small { display: block; margin-top: 9px; color: #686d72; font-size: 10px; line-height: 1.5; }
+.cnpj-error { margin: 9px 0 0; color: #d9a995; font-size: 11px; }
+
+.cnpj-result { border: 1px solid rgba(255,255,255,.09); border-radius: 28px; padding: 28px; background: linear-gradient(145deg, rgba(255,255,255,.035), rgba(255,255,255,.014)); box-shadow: inset 0 1px 0 rgba(255,255,255,.015); }
+.cnpj-result[hidden] { display: none; }
+.cnpj-result-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.cnpj-result-head div { display: grid; gap: 5px; }
+.cnpj-result-head span { color: var(--gold); font-size: 9px; font-weight: 800; letter-spacing: .16em; }
+.cnpj-result-head strong { color: #f1efe9; font-size: 18px; }
+.cnpj-result-head button { border: 0; background: none; color: #868b90; cursor: pointer; font: inherit; font-size: 10px; text-decoration: underline; text-underline-offset: 4px; }
+.cnpj-company { padding: 22px 0 0; }
+.company-main { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
+.company-main > div { min-width: 0; }
+.cnpj-company .company-main > div > span { display: block; color: #74797e; font-size: 9px; letter-spacing: .09em; text-transform: uppercase; }
+.cnpj-company .company-main strong { display: block; margin-top: 7px; color: #f0eee9; font-size: 20px; line-height: 1.3; letter-spacing: -.01em; }
+.company-main small { display: block; margin-top: 6px; color: #858a8f; font-size: 11px; line-height: 1.5; }
+.company-status { flex: 0 0 auto; padding: 7px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.11); color: #b7bbc0; background: rgba(255,255,255,.03); font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.company-status.is-active { border-color: rgba(119,169,125,.27); background: rgba(119,169,125,.08); color: #a8c9ab; }
+.company-status.is-warning { border-color: rgba(215,154,131,.28); background: rgba(215,154,131,.07); color: #d9a995; }
+
+.company-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 20px; border-top: 1px solid rgba(255,255,255,.07); }
+.company-data-grid > div { padding: 15px 14px 13px 0; border-bottom: 1px solid rgba(255,255,255,.07); }
+.company-data-grid > div:nth-child(even) { padding-left: 14px; border-left: 1px solid rgba(255,255,255,.07); }
+.company-data-grid span { display: block; margin-bottom: 5px; color: #74797e; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.company-data-grid strong { display: block; color: #dcdcd8; font-size: 11px; line-height: 1.45; font-weight: 650; }
+.cnpj-result-title { margin: 24px 0 12px; color: #d5d4d0; font-size: 11px; font-weight: 800; letter-spacing: .02em; }
+.cnpj-tasks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cnpj-tasks article { padding: 16px; border: 1px solid rgba(255,255,255,.07); border-radius: 15px; background: rgba(255,255,255,.018); }
+.cnpj-tasks article.needs-attention { border-color: rgba(215,154,131,.26); background: rgba(215,154,131,.035); }
+.cnpj-tasks article > span { color: var(--gold); font-size: 8px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.cnpj-tasks h4 { margin: 8px 0 6px; color: #ebe9e4; font-size: 13px; }
+.cnpj-tasks p { margin: 0; color: #858a8f; font-size: 10.5px; line-height: 1.55; }
+.cnpj-source { margin-top: 17px; padding: 13px 14px; border: 1px solid rgba(255,255,255,.07); border-radius: 13px; color: #74797e; background: rgba(255,255,255,.018); font-size: 9.8px; line-height: 1.6; }
+.cnpj-whatsapp { margin-top: 18px; width: 100%; }
+
+@media (max-width: 900px) {
+  .cnpj-check-grid { grid-template-columns: 1fr; gap: 42px; }
+}
+@media (max-width: 620px) {
+  .cnpj-trust { flex-direction: column; }
+  .cnpj-input-row { flex-direction: column; }
+  .cnpj-input-row input, .cnpj-input-row button { width: 100%; }
+  .cnpj-result { padding: 23px 19px; border-radius: 24px; }
+  .company-main { flex-direction: column; }
+  .company-data-grid, .cnpj-tasks { grid-template-columns: 1fr; }
+  .company-data-grid > div:nth-child(even) { padding-left: 0; border-left: 0; }
+}
