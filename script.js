@@ -226,3 +226,211 @@ cnpjReset?.addEventListener('click', () => {
   cnpjError.hidden = true;
   cnpjInput.focus();
 });
+
+
+// Accessibility voice reader
+const accessibilityTrigger = document.getElementById('accessibility-trigger');
+const accessibilityPanel = document.getElementById('accessibility-panel');
+const accessibilityClose = document.getElementById('accessibility-close');
+const speakStart = document.getElementById('speak-start');
+const speakPause = document.getElementById('speak-pause');
+const speakStop = document.getElementById('speak-stop');
+const accessibilityStatus = document.getElementById('accessibility-status');
+
+const speechSupported = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+let speechChunks = [];
+let speechIndex = 0;
+let speechPaused = false;
+let speechReading = false;
+let preferredVoice = null;
+
+const updateSpeechButtons = () => {
+  if (!speechSupported) {
+    speakStart && (speakStart.disabled = true);
+    speakPause && (speakPause.disabled = true);
+    speakStop && (speakStop.disabled = true);
+    if (accessibilityStatus) {
+      accessibilityStatus.textContent = 'A leitura em voz alta não está disponível neste navegador.';
+    }
+    return;
+  }
+
+  if (speakStart) speakStart.disabled = speechReading;
+  if (speakPause) {
+    speakPause.disabled = !speechReading;
+    speakPause.textContent = speechPaused ? 'Continuar' : 'Pausar';
+  }
+  if (speakStop) speakStop.disabled = !speechReading;
+};
+
+const loadPreferredVoice = () => {
+  if (!speechSupported) return;
+  const voices = window.speechSynthesis.getVoices();
+  preferredVoice =
+    voices.find(voice => /^pt-BR$/i.test(voice.lang)) ||
+    voices.find(voice => /^pt/i.test(voice.lang)) ||
+    null;
+};
+
+if (speechSupported) {
+  loadPreferredVoice();
+  window.speechSynthesis.addEventListener?.('voiceschanged', loadPreferredVoice);
+}
+
+const getReadablePageText = () => {
+  const main = document.querySelector('main');
+  if (!main) return '';
+
+  const clone = main.cloneNode(true);
+  clone.querySelectorAll('script, style, svg, iframe, form, button, input, [hidden]').forEach(el => el.remove());
+
+  return (clone.innerText || clone.textContent || '')
+    .replace(/\s+/g, ' ')
+    .replace(/•/g, ',')
+    .trim();
+};
+
+const splitSpeechText = (text, maxLength = 220) => {
+  const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
+  const chunks = [];
+  let current = '';
+
+  sentences.forEach(sentence => {
+    const clean = sentence.trim();
+    if (!clean) return;
+
+    if ((current + ' ' + clean).trim().length <= maxLength) {
+      current = (current + ' ' + clean).trim();
+      return;
+    }
+
+    if (current) chunks.push(current);
+
+    if (clean.length <= maxLength) {
+      current = clean;
+      return;
+    }
+
+    const words = clean.split(/\s+/);
+    current = '';
+    words.forEach(word => {
+      if ((current + ' ' + word).trim().length > maxLength) {
+        if (current) chunks.push(current);
+        current = word;
+      } else {
+        current = (current + ' ' + word).trim();
+      }
+    });
+  });
+
+  if (current) chunks.push(current);
+  return chunks;
+};
+
+const finishSpeech = (message = 'Leitura concluída.') => {
+  speechReading = false;
+  speechPaused = false;
+  speechChunks = [];
+  speechIndex = 0;
+  if (accessibilityStatus) accessibilityStatus.textContent = message;
+  updateSpeechButtons();
+};
+
+const speakCurrentChunk = () => {
+  if (!speechSupported || !speechReading) return;
+
+  if (speechIndex >= speechChunks.length) {
+    finishSpeech();
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(speechChunks[speechIndex]);
+  utterance.lang = preferredVoice?.lang || 'pt-BR';
+  if (preferredVoice) utterance.voice = preferredVoice;
+  utterance.rate = 1;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+
+  utterance.onend = () => {
+    if (!speechReading) return;
+    speechIndex += 1;
+    speakCurrentChunk();
+  };
+
+  utterance.onerror = event => {
+    if (event.error === 'canceled' || event.error === 'interrupted') return;
+    finishSpeech('Não foi possível continuar a leitura. Tente novamente.');
+  };
+
+  window.speechSynthesis.speak(utterance);
+};
+
+accessibilityTrigger?.addEventListener('click', () => {
+  const willOpen = accessibilityPanel?.hasAttribute('hidden');
+  if (willOpen) {
+    accessibilityPanel.removeAttribute('hidden');
+    accessibilityTrigger.setAttribute('aria-expanded', 'true');
+    accessibilityClose?.focus();
+  } else {
+    accessibilityPanel?.setAttribute('hidden', '');
+    accessibilityTrigger.setAttribute('aria-expanded', 'false');
+  }
+});
+
+accessibilityClose?.addEventListener('click', () => {
+  accessibilityPanel?.setAttribute('hidden', '');
+  accessibilityTrigger?.setAttribute('aria-expanded', 'false');
+  accessibilityTrigger?.focus();
+});
+
+speakStart?.addEventListener('click', () => {
+  if (!speechSupported) return;
+
+  window.speechSynthesis.cancel();
+  const pageText = getReadablePageText();
+
+  if (!pageText) {
+    if (accessibilityStatus) accessibilityStatus.textContent = 'Não encontrei conteúdo para ler.';
+    return;
+  }
+
+  speechChunks = splitSpeechText(pageText);
+  speechIndex = 0;
+  speechPaused = false;
+  speechReading = true;
+
+  if (accessibilityStatus) {
+    accessibilityStatus.textContent = 'Lendo o conteúdo principal da página.';
+  }
+
+  updateSpeechButtons();
+  speakCurrentChunk();
+});
+
+speakPause?.addEventListener('click', () => {
+  if (!speechSupported || !speechReading) return;
+
+  if (speechPaused) {
+    window.speechSynthesis.resume();
+    speechPaused = false;
+    if (accessibilityStatus) accessibilityStatus.textContent = 'Leitura retomada.';
+  } else {
+    window.speechSynthesis.pause();
+    speechPaused = true;
+    if (accessibilityStatus) accessibilityStatus.textContent = 'Leitura pausada.';
+  }
+
+  updateSpeechButtons();
+});
+
+speakStop?.addEventListener('click', () => {
+  if (!speechSupported) return;
+  window.speechSynthesis.cancel();
+  finishSpeech('Leitura interrompida.');
+});
+
+window.addEventListener('beforeunload', () => {
+  if (speechSupported) window.speechSynthesis.cancel();
+});
+
+updateSpeechButtons();
