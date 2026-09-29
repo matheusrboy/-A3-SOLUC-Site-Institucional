@@ -216,7 +216,7 @@ button { font: inherit; }
 .footer-grid p:last-child { text-align: right; }
 
 .floating-whatsapp { position: fixed; right: 20px; bottom: 20px; z-index: 90; width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; background: #17191b; color: #fff; box-shadow: 0 12px 32px rgba(16,17,18,.22); transition: .2s; }
-.floating-whatsapp:hover { transform: translateY(-3px) scale(1.02); background: var(--gold); }
+.floating-whatsapp:hover { transform: translateY(-3px) scale(1.02); background: #1ebe5d; }
 .floating-whatsapp svg { width: 25px; fill: currentColor; }
 
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity .7s ease, transform .7s ease; }
@@ -280,7 +280,7 @@ body { background: #050505; }
 .contact .btn-primary:hover { background: linear-gradient(135deg, #dec98c, #bf9651); }
 
 .site-footer { background: #030303; }
-.floating-whatsapp { background: #111314; border: 1px solid rgba(255,255,255,.10); box-shadow: 0 12px 32px rgba(0,0,0,.42); }
+.floating-whatsapp { background: #25D366; border: 1px solid rgba(255,255,255,.10); box-shadow: 0 12px 32px rgba(0,0,0,.42); }
 
 @media (max-width: 900px) {
   .nav-wrap { height: 68px; }
