@@ -819,3 +819,211 @@ body { background: #050505; }
 .whatsapp-brand-icon {
   color: #25D366;
 }
+
+
+/* Accessibility voice reader */
+.accessibility-widget {
+  position: fixed;
+  right: 24px;
+  bottom: 94px;
+  z-index: 220;
+}
+
+.accessibility-trigger {
+  min-height: 48px;
+  padding: 0 15px 0 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  background: #111314;
+  color: #f2f0eb;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 760;
+  letter-spacing: .01em;
+  box-shadow: 0 12px 32px rgba(0,0,0,.32);
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.accessibility-trigger:hover,
+.accessibility-trigger:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(214,188,122,.42);
+  background: #17191b;
+}
+
+.accessibility-trigger:focus-visible,
+.accessibility-action:focus-visible,
+.accessibility-close:focus-visible {
+  outline: 3px solid rgba(214,188,122,.35);
+  outline-offset: 3px;
+}
+
+.accessibility-trigger svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--gold-light);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.accessibility-panel {
+  position: absolute;
+  right: 0;
+  bottom: 60px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.11);
+  background: rgba(12,13,14,.98);
+  color: #f2f0eb;
+  box-shadow: 0 24px 60px rgba(0,0,0,.52);
+  backdrop-filter: blur(18px);
+}
+
+.accessibility-panel[hidden] {
+  display: none;
+}
+
+.accessibility-panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.accessibility-panel-head > div {
+  display: grid;
+  gap: 5px;
+}
+
+.accessibility-kicker {
+  color: var(--gold);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .17em;
+}
+
+.accessibility-panel-head strong {
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.accessibility-close {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 50%;
+  background: rgba(255,255,255,.035);
+  color: #d8d7d3;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.accessibility-description {
+  margin: 14px 0 16px;
+  color: #9da1a6;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.accessibility-actions {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+}
+
+.accessibility-action {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  background: rgba(255,255,255,.035);
+  color: #e8e7e2;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 760;
+}
+
+.accessibility-action-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-color: rgba(184,146,79,.35);
+  background: rgba(184,146,79,.12);
+  color: #f1e6cc;
+}
+
+.accessibility-action-primary svg {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.accessibility-action:disabled {
+  opacity: .38;
+  cursor: not-allowed;
+}
+
+.accessibility-status {
+  margin: 14px 0 0;
+  color: #c9c7c1;
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.accessibility-note {
+  margin: 8px 0 0;
+  color: #6f7479;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+@media (max-width: 620px) {
+  .accessibility-widget {
+    right: 16px;
+    bottom: 86px;
+  }
+
+  .accessibility-trigger {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .accessibility-trigger > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .accessibility-panel {
+    right: 0;
+    bottom: 58px;
+  }
+
+  .accessibility-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .accessibility-action-primary {
+    grid-column: 1 / -1;
+  }
+}
