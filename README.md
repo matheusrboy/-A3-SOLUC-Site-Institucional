@@ -4,7 +4,7 @@ Site institucional da **A3 SOLUC — Contabilidade & Soluções Empresariais**, 
 
 ## Versão atual
 
-A versão vigente corresponde ao trabalho consolidado até **29/09/2026 (V10.1)**.
+A versão vigente corresponde ao trabalho consolidado até **29/09/2026 (V11)**.
 
 ### Identidade visual
 - Fundo preto / dark institucional
@@ -34,6 +34,7 @@ A versão vigente corresponde ao trabalho consolidado até **29/09/2026 (V10.1)*
 - Construção conjunta da solução com o cliente
 - Reuniões de acompanhamento dos processos
 - Organização das rotinas e orientação para decisões mais claras
+- Bloco “Nosso jeito de atender” dentro da seção Sobre nós
 
 ## Arquivos principais
 - `index.html` — estrutura da página
