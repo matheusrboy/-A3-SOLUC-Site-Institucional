@@ -1356,8 +1356,10 @@ body {
   .cnpj-input-row input {
     width: 100%;
     min-width: 0;
-    height: 52px;
-    font-size: 16px;
+    height: 60px;
+    padding: 0 18px;
+    font-size: 17px;
+    border-radius: 16px;
   }
 
   .cnpj-input-row button {
