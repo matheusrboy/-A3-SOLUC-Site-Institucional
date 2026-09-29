@@ -414,6 +414,47 @@
     </div>
   </footer>
 
+
+  <div class="accessibility-widget" id="accessibility-widget">
+    <button
+      class="accessibility-trigger"
+      id="accessibility-trigger"
+      type="button"
+      aria-expanded="false"
+      aria-controls="accessibility-panel"
+      aria-label="Abrir recursos de acessibilidade">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
+        <path d="M5 9.25c2.3-.65 4.63-.98 7-.98s4.7.33 7 .98M12 8.3v5.2M8.2 20l3.8-6.5 3.8 6.5M7.3 12.2 12 14.5l4.7-2.3"/>
+      </svg>
+      <span>Acessibilidade</span>
+    </button>
+
+    <div class="accessibility-panel" id="accessibility-panel" hidden>
+      <div class="accessibility-panel-head">
+        <div>
+          <span class="accessibility-kicker">ACESSIBILIDADE</span>
+          <strong>Leitura em voz alta</strong>
+        </div>
+        <button class="accessibility-close" id="accessibility-close" type="button" aria-label="Fechar recursos de acessibilidade">×</button>
+      </div>
+
+      <p class="accessibility-description">Ouça o conteúdo principal do site usando a voz disponível no seu navegador.</p>
+
+      <div class="accessibility-actions">
+        <button class="accessibility-action accessibility-action-primary" id="speak-start" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16 8.5c1.3 1.1 1.3 5.9 0 7M18.7 6c3.1 2.5 3.1 9.5 0 12"/></svg>
+          Ouvir página
+        </button>
+        <button class="accessibility-action" id="speak-pause" type="button" disabled>Pausar</button>
+        <button class="accessibility-action" id="speak-stop" type="button" disabled>Parar</button>
+      </div>
+
+      <p class="accessibility-status" id="accessibility-status" role="status" aria-live="polite">Pronto para ouvir.</p>
+      <p class="accessibility-note">Este recurso complementa leitores de tela e outras tecnologias assistivas.</p>
+    </div>
+  </div>
+
   <a class="floating-whatsapp" href="https://wa.me/5511913298952?text=Ol%C3%A1%2C%20vim%20pelo%20site%20da%20A3%20SOLUC." target="_blank" rel="noopener" aria-label="Falar com a A3 SOLUC pelo WhatsApp">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.6A11 11 0 0 0 3.2 16.9L2 22l5.2-1.2A11 11 0 0 0 20.5 3.6ZM12 20a8.8 8.8 0 0 1-4.5-1.2l-.3-.2-3.1.7.7-3-.2-.3A8.8 8.8 0 1 1 12 20Z"/><path d="M16.9 14.2c-.3-.1-1.7-.8-1.9-.9-.3-.1-.5-.1-.7.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.7-1.5-1.9-.2-.3 0-.4.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.5l-.9-2.1c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3Z"/></svg>
   </a>
