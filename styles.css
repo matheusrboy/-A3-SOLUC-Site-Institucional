@@ -788,3 +788,27 @@ body { background: #050505; }
     min-height: 280px;
   }
 }
+
+
+/* Contact detail icons */
+.detail-label {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 9px;
+}
+
+.detail-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  color: var(--gold-light);
+}
+
+.detail-icon svg {
+  display: block;
+  width: 17px;
+  height: 17px;
+}
