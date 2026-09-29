@@ -62,6 +62,13 @@ Registro das principais decisões tomadas na construção do site institucional 
 - Exibição de razão social, situação cadastral, CNAE principal, cidade/UF, porte, Simples Nacional e MEI quando disponíveis.
 - A triagem sugere frentes que podem merecer revisão com a A3, sem afirmar automaticamente a existência de pendências.
 
+## V13
+- Navegação principal redesenhada para uma barra lateral fixa no desktop.
+- Links de Início e Consulta CNPJ adicionados à navegação.
+- Logo ampliada na lateral e exibida com proporção natural, sem recorte por altura fixa.
+- Conteúdo principal deslocado para a direita da barra lateral.
+- No tablet e celular, o cabeçalho compacto permanece no topo.
+
 ## Próximos passos
 - Revisar conteúdo final antes da publicação.
 - Se futuramente surgirem indicadores reais e validados, avaliar se complementam a seção sem substituir os diferenciais de atendimento.
