@@ -805,6 +805,8 @@ body { background: #050505; }
   height: 17px;
   flex: 0 0 17px;
   color: var(--gold-light);
+  position: relative;
+  top: 2px;
 }
 
 .detail-icon svg {
