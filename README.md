@@ -4,7 +4,7 @@ Site institucional da **A3 SOLUC — Contabilidade & Soluções Empresariais**, 
 
 ## Versão atual
 
-A versão vigente corresponde ao trabalho consolidado até **29/09/2026 (V11)**.
+A versão vigente corresponde ao trabalho consolidado até **29/09/2026 (V12.1)**.
 
 ### Identidade visual
 - Fundo preto / dark institucional
@@ -28,6 +28,12 @@ A versão vigente corresponde ao trabalho consolidado até **29/09/2026 (V11)**.
 - Paralegal e societário
 - MEI e pequenos negócios
 - Imposto de Renda Pessoa Física (IRPF)
+
+### Consulta empresarial por CNPJ
+- Consulta de dados cadastrais públicos
+- Arquitetura preparada para Vercel com função serverless em `/api/cnpj`
+- Triagem inicial de possíveis frentes de revisão com a A3
+- Resultado sempre apresentado como pré-análise, não como diagnóstico definitivo
 
 ### Diferenciais destacados
 - Atendimento rápido, próximo e eficaz
