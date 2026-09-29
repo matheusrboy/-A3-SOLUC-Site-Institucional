@@ -56,6 +56,12 @@ Registro das principais decisões tomadas na construção do site institucional 
 - O bloco foi adaptado para desktop e mobile.
 - Ajustado o alinhamento e o espaçamento dos divisores horizontais do bloco para uma composição mais equilibrada.
 
+## V12.1
+- Adicionada a seção de consulta empresarial por CNPJ.
+- A consulta usa uma função serverless em `/api/cnpj` para buscar dados públicos sem depender de chamadas externas diretas do navegador.
+- Exibição de razão social, situação cadastral, CNAE principal, cidade/UF, porte, Simples Nacional e MEI quando disponíveis.
+- A triagem sugere frentes que podem merecer revisão com a A3, sem afirmar automaticamente a existência de pendências.
+
 ## Próximos passos
 - Revisar conteúdo final antes da publicação.
 - Se futuramente surgirem indicadores reais e validados, avaliar se complementam a seção sem substituir os diferenciais de atendimento.
