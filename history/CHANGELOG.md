@@ -54,6 +54,7 @@ Registro das principais decisões tomadas na construção do site institucional 
 - Inserida uma frase de posicionamento sobre contabilidade como apoio à decisão.
 - Criados três pilares: **Rapidez e eficácia**, **Solução em conjunto** e **Acompanhamento próximo**.
 - O bloco foi adaptado para desktop e mobile.
+- Ajustado o alinhamento e o espaçamento dos divisores horizontais do bloco para uma composição mais equilibrada.
 
 ## Próximos passos
 - Revisar conteúdo final antes da publicação.
