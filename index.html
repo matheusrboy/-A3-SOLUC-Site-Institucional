@@ -149,6 +149,73 @@
       </div>
     </section>
 
+
+    <section class="section cnpj-check" id="consulta-cnpj">
+      <div class="container cnpj-check-grid">
+        <div class="cnpj-check-copy reveal">
+          <p class="eyebrow">CONSULTA EMPRESARIAL</p>
+          <h2>Descubra o que merece atenção no seu <span>CNPJ.</span></h2>
+          <p>Consulte dados públicos da empresa e receba uma triagem inicial das áreas que podem merecer revisão com a A3.</p>
+
+          <div class="cnpj-trust">
+            <span class="demo-badge">DADOS PÚBLICOS • BETA</span>
+            <p>A consulta busca informações cadastrais públicas e gera uma triagem inicial. O resultado não substitui a análise da equipe A3.</p>
+          </div>
+
+          <form class="cnpj-form" id="cnpj-form" novalidate>
+            <label for="cnpj-input">CNPJ da empresa</label>
+            <div class="cnpj-input-row">
+              <input id="cnpj-input" name="cnpj" inputmode="text" autocapitalize="characters" autocomplete="off" placeholder="00.000.000/0000-00" maxlength="18" aria-describedby="cnpj-help cnpj-error" />
+              <button type="submit" id="cnpj-submit">Analisar CNPJ <span aria-hidden="true">→</span></button>
+            </div>
+            <small id="cnpj-help">Utilizamos apenas informações cadastrais públicas para esta pré-análise.</small>
+            <p id="cnpj-error" class="cnpj-error" role="alert" hidden>Não foi possível consultar este CNPJ.</p>
+          </form>
+        </div>
+
+        <div class="cnpj-result reveal reveal-delay" id="cnpj-result" hidden>
+          <div class="cnpj-result-head">
+            <div>
+              <span>PRÉ-ANÁLISE</span>
+              <strong>Perfil cadastral da empresa</strong>
+            </div>
+            <button type="button" id="cnpj-reset">Nova consulta</button>
+          </div>
+
+          <div class="cnpj-company">
+            <div class="company-main">
+              <div>
+                <span>Empresa</span>
+                <strong id="cnpj-company-name">—</strong>
+                <small id="cnpj-trade-name"></small>
+              </div>
+              <span class="company-status" id="cnpj-company-status">—</span>
+            </div>
+
+            <div class="company-data-grid">
+              <div><span>CNPJ</span><strong id="cnpj-result-number">—</strong></div>
+              <div><span>Cidade / UF</span><strong id="cnpj-location">—</strong></div>
+              <div><span>Atividade principal</span><strong id="cnpj-cnae">—</strong></div>
+              <div><span>Porte</span><strong id="cnpj-size">—</strong></div>
+              <div><span>Simples Nacional</span><strong id="cnpj-simples">—</strong></div>
+              <div><span>MEI</span><strong id="cnpj-mei">—</strong></div>
+            </div>
+          </div>
+
+          <p class="cnpj-result-title">Pontos que podem merecer revisão com a A3</p>
+          <div class="cnpj-tasks" id="cnpj-tasks"></div>
+
+          <div class="cnpj-source">
+            A triagem usa dados cadastrais públicos e indica possíveis frentes de atenção. Ela não afirma, por si só, a existência de pendências ou obrigações específicas.
+          </div>
+
+          <a class="btn btn-primary cnpj-whatsapp" id="cnpj-whatsapp" href="https://wa.me/5511913298952" target="_blank" rel="noopener">
+            Quero revisar meu CNPJ com a A3 <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <section class="section about" id="sobre">
       <div class="container about-grid">
         <div class="about-copy reveal">
