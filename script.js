@@ -659,8 +659,15 @@ const captureBaseFontSizes = () => {
 };
 
 const applyTextScale = () => {
+  const elements = document.querySelectorAll(scalableTextSelector);
+
+  if (accessibilityPrefs.textScale === 1) {
+    elements.forEach(element => element.style.removeProperty('font-size'));
+    return;
+  }
+
   captureBaseFontSizes();
-  document.querySelectorAll(scalableTextSelector).forEach(element => {
+  elements.forEach(element => {
     const base = parseFloat(element.dataset.a11yBaseFontSize || '16');
     element.style.fontSize = Math.round(base * accessibilityPrefs.textScale * 100) / 100 + 'px';
   });
