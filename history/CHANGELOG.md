@@ -49,7 +49,12 @@ Registro das principais decisões tomadas na construção do site institucional 
 - Correção da prévia autossuficiente para evitar abertura sem CSS.
 - Estado atual do código-fonte versionado neste repositório.
 
+## V11
+- O espaço antes vazio da seção “Sobre nós” passou a apresentar **Nosso jeito de atender**.
+- Inserida uma frase de posicionamento sobre contabilidade como apoio à decisão.
+- Criados três pilares: **Rapidez e eficácia**, **Solução em conjunto** e **Acompanhamento próximo**.
+- O bloco foi adaptado para desktop e mobile.
+
 ## Próximos passos
-- Inserir resultados quantitativos reais no espaço reservado em “Sobre nós”, somente após validação.
-- Validar números de clientes, empresas abertas/alteradas, regularizações e anos de atuação.
 - Revisar conteúdo final antes da publicação.
+- Se futuramente surgirem indicadores reais e validados, avaliar se complementam a seção sem substituir os diferenciais de atendimento.
