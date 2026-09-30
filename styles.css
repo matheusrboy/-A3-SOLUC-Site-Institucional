@@ -2371,3 +2371,105 @@ body.a11y-high-contrast :where(
   .service-cta-box,
   .service-related-links a
 ) { border-color: rgba(255,255,255,.48) !important; }
+
+
+/* Privacy page */
+.footer-privacy-link {
+  color: #aeb2b6;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color .2s ease;
+}
+.footer-privacy-link:hover { color: var(--gold-light); }
+
+.privacy-section {
+  padding: 78px 0;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.privacy-section:last-child { border-bottom: 0; }
+.privacy-grid {
+  display: grid;
+  grid-template-columns: .72fr 1.28fr;
+  gap: 72px;
+  align-items: start;
+}
+.privacy-index {
+  position: sticky;
+  top: 32px;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px;
+  background: rgba(255,255,255,.022);
+}
+.privacy-index strong {
+  display: block;
+  margin-bottom: 14px;
+  color: #eceae4;
+  font-size: 12px;
+  letter-spacing: .08em;
+}
+.privacy-index a {
+  display: block;
+  padding: 8px 0;
+  color: #8f9499;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.privacy-index a:hover { color: var(--gold-light); }
+.privacy-copy h2 {
+  margin: 0 0 18px;
+  color: #f1efe9;
+  font-size: clamp(28px, 3.2vw, 42px);
+  line-height: 1.12;
+  letter-spacing: -.035em;
+}
+.privacy-copy h3 {
+  margin: 34px 0 10px;
+  color: #eceae4;
+  font-size: 18px;
+}
+.privacy-copy p,
+.privacy-copy li {
+  color: #9da2a6;
+  font-size: 14px;
+  line-height: 1.82;
+}
+.privacy-copy p { margin: 0 0 16px; }
+.privacy-copy ul {
+  margin: 12px 0 24px;
+  padding-left: 20px;
+}
+.privacy-copy li + li { margin-top: 9px; }
+.privacy-copy strong { color: #e4e1da; }
+.privacy-copy a {
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.privacy-note {
+  margin-top: 26px;
+  padding: 18px 20px;
+  border-left: 2px solid rgba(184,146,79,.65);
+  background: rgba(184,146,79,.055);
+  color: #b9bdc1;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.privacy-updated {
+  display: inline-flex;
+  margin-top: 16px;
+  padding: 8px 11px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 999px;
+  color: #92979b;
+  font-size: 10px;
+}
+@media (max-width: 900px) {
+  .privacy-grid { grid-template-columns: 1fr; gap: 34px; }
+  .privacy-index { position: static; }
+}
+@media (max-width: 768px) {
+  .privacy-section { padding: 60px 0; }
+  .privacy-copy p,
+  .privacy-copy li { font-size: 13.5px; }
+}
