@@ -239,8 +239,8 @@ const translateAttributes = (language) => {
   const description = document.querySelector('meta[name="description"]');
   if (description) {
     description.content = en
-      ? 'A3 SOLUC — Accounting & Business Solutions in São Bernardo do Campo. Tax, accounting, HR, payroll, corporate support, MEI and individual income tax services.'
-      : 'A3 SOLUC — Contabilidade & Soluções Empresariais em São Bernardo do Campo. Serviços fiscal, contábil, RH e Departamento Pessoal, paralegal, MEI e Imposto de Renda Pessoa Física.';
+      ? 'A3 SOLUC — Accounting in São Bernardo do Campo for companies, MEIs and individuals. Tax, accounting, payroll, corporate support and income tax.'
+      : 'A3 SOLUC — Contabilidade em São Bernardo do Campo para empresas, MEIs e pessoas físicas. Fiscal, contábil, DP, paralegal e Imposto de Renda.';
   }
 
   const attrs = [
