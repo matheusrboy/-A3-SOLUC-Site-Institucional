@@ -2350,3 +2350,24 @@ html.a11y-reduce-motion *::after {
   .service-hub-link-wrap { margin-top: 22px; }
   .service-hub-link-wrap .btn { width: 100%; }
 }
+
+
+/* Accessibility coverage for service landing pages */
+body.a11y-high-contrast :where(
+  .service-page-lead,
+  .service-rich-text p,
+  .service-detail-card p,
+  .service-summary-list p,
+  .service-signal,
+  .service-breadcrumb,
+  .service-related-links a,
+  .service-cta-box p
+) { color: #f6f6f3 !important; }
+
+body.a11y-high-contrast :where(
+  .service-summary-card,
+  .service-detail-card,
+  .service-signal,
+  .service-cta-box,
+  .service-related-links a
+) { border-color: rgba(255,255,255,.48) !important; }
