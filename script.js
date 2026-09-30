@@ -34,7 +34,8 @@ document.getElementById('year').textContent = new Date().getFullYear();
 
 
 // Site language
-let currentLanguage = 'pt';
+const seoLanguage = /^\/en(?:\/|$)/.test(window.location.pathname) ? 'en' : 'pt';
+let currentLanguage = seoLanguage;
 const languageWidget = document.getElementById('language-widget');
 const languageTrigger = document.getElementById('language-trigger');
 const languagePanel = document.getElementById('language-panel');
@@ -347,10 +348,7 @@ languageTrigger?.addEventListener('click', () => {
   }
 });
 
-let savedLanguage = 'pt';
-try {
-  savedLanguage = localStorage.getItem('a3-language') || 'pt';
-} catch (_) {}
+let savedLanguage = seoLanguage;
 
 const cnpjForm = document.getElementById('cnpj-form');
 const cnpjInput = document.getElementById('cnpj-input');
