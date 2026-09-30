@@ -958,10 +958,66 @@ const startPageReading = () => {
   }, 180);
 };
 
+let accessibilityPreviouslyFocused = null;
+let accessibilityPreviousBodyOverflow = '';
+let accessibilityIsolatedElements = [];
+
+const accessibilityFocusableSelector = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])'
+].join(',');
+
+const getAccessibilityFocusableElements = () => {
+  if (!accessibilityPanel) return [];
+  return [...accessibilityPanel.querySelectorAll(accessibilityFocusableSelector)]
+    .filter(element => !element.hasAttribute('hidden') && element.getClientRects().length > 0);
+};
+
+const isolateAccessibilityBackground = () => {
+  accessibilityIsolatedElements = [];
+  [...document.body.children].forEach(element => {
+    if (!(element instanceof HTMLElement)) return;
+    if (element === accessibilityPanel || element === accessibilityBackdrop) return;
+    if (element.tagName === 'SCRIPT' || element.tagName === 'STYLE') return;
+
+    accessibilityIsolatedElements.push({
+      element,
+      inert: element.inert,
+      ariaHidden: element.getAttribute('aria-hidden')
+    });
+
+    element.inert = true;
+    element.setAttribute('aria-hidden', 'true');
+  });
+};
+
+const restoreAccessibilityBackground = () => {
+  accessibilityIsolatedElements.forEach(({ element, inert, ariaHidden }) => {
+    element.inert = inert;
+    if (ariaHidden === null) element.removeAttribute('aria-hidden');
+    else element.setAttribute('aria-hidden', ariaHidden);
+  });
+  accessibilityIsolatedElements = [];
+};
+
 const openAccessibilityPanel = () => {
+  if (!accessibilityPanel) return;
+
   languagePanel?.setAttribute('hidden', '');
   languageTrigger?.setAttribute('aria-expanded', 'false');
-  accessibilityPanel?.removeAttribute('hidden');
+
+  accessibilityPreviouslyFocused =
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : accessibilityTrigger;
+
+  accessibilityPreviousBodyOverflow = document.body.style.overflow;
+
+  accessibilityPanel.removeAttribute('hidden');
   accessibilityBackdrop?.removeAttribute('hidden');
   accessibilityTrigger?.setAttribute('aria-expanded', 'true');
   document.body.style.overflow = 'hidden';
@@ -972,35 +1028,61 @@ const openAccessibilityPanel = () => {
       : (speechReading ? 'Leitura em andamento.' : 'Pronto para iniciar a leitura.')
   );
 
-  accessibilityClose?.focus();
+  (accessibilityClose || accessibilityPanel).focus();
+  isolateAccessibilityBackground();
 };
 
 const closeAccessibilityPanel = () => {
-  accessibilityPanel?.setAttribute('hidden', '');
+  if (!accessibilityPanel || accessibilityPanel.hasAttribute('hidden')) return;
+
+  restoreAccessibilityBackground();
+  accessibilityPanel.setAttribute('hidden', '');
   accessibilityBackdrop?.setAttribute('hidden', '');
   accessibilityTrigger?.setAttribute('aria-expanded', 'false');
-  document.body.style.overflow = '';
+  document.body.style.overflow = accessibilityPreviousBodyOverflow;
+
+  const focusTarget = accessibilityPreviouslyFocused || accessibilityTrigger;
+  accessibilityPreviouslyFocused = null;
+  focusTarget?.focus();
 };
 
 accessibilityTrigger?.addEventListener('click', () => {
-  if (accessibilityPanel?.hasAttribute('hidden')) {
-    openAccessibilityPanel();
-  } else {
-    closeAccessibilityPanel();
-  }
+  if (accessibilityPanel?.hasAttribute('hidden')) openAccessibilityPanel();
+  else closeAccessibilityPanel();
 });
 
-accessibilityClose?.addEventListener('click', () => {
-  closeAccessibilityPanel();
-  accessibilityTrigger?.focus();
-});
-
+accessibilityClose?.addEventListener('click', closeAccessibilityPanel);
 accessibilityBackdrop?.addEventListener('click', closeAccessibilityPanel);
 
 document.addEventListener('keydown', event => {
-  if (event.key === 'Escape' && !accessibilityPanel?.hasAttribute('hidden')) {
+  if (!accessibilityPanel || accessibilityPanel.hasAttribute('hidden')) return;
+
+  if (event.key === 'Escape') {
+    event.preventDefault();
     closeAccessibilityPanel();
-    accessibilityTrigger?.focus();
+    return;
+  }
+
+  if (event.key !== 'Tab') return;
+
+  const focusable = getAccessibilityFocusableElements();
+
+  if (!focusable.length) {
+    event.preventDefault();
+    accessibilityPanel.focus();
+    return;
+  }
+
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  const active = document.activeElement;
+
+  if (event.shiftKey && (active === first || !accessibilityPanel.contains(active))) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && (active === last || !accessibilityPanel.contains(active))) {
+    event.preventDefault();
+    first.focus();
   }
 });
 
