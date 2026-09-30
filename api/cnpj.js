@@ -84,6 +84,19 @@ const checkRateLimit = (clientIp) => {
 };
 
 module.exports = async function handler(req, res) {
+  const fetchSite = String(req.headers['sec-fetch-site'] || '').toLowerCase();
+
+  // Browser requests embedded from another site are not allowed to consume this endpoint.
+  // Same-origin visitors and direct server-side requests continue to work normally.
+  if (fetchSite === 'cross-site') {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(403).json({
+      error: 'Esta consulta está disponível somente pelo site da A3 SOLUC.'
+    });
+  }
+
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
     res.setHeader('Cache-Control', 'no-store');
