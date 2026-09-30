@@ -2106,3 +2106,247 @@ html.a11y-reduce-motion *::after {
     height: 38px;
   }
 }
+
+
+/* SEO service landing pages */
+.service-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  color: var(--gold-light);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+.service-card-link:hover { color: #f0d99f; }
+.service-card-link span { transition: transform .2s ease; }
+.service-card-link:hover span { transform: translateX(3px); }
+.service-hub-link-wrap { display: flex; justify-content: center; margin-top: 30px; }
+
+.service-page-body { background: #050505; }
+.service-page-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 150px 0 92px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.service-page-hero::before {
+  content: "";
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  right: -220px;
+  top: -120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(184,146,79,.18), transparent 68%);
+  pointer-events: none;
+}
+.service-page-hero-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.12fr .88fr;
+  gap: 76px;
+  align-items: center;
+}
+.service-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 26px;
+  color: #7f8489;
+  font-size: 11px;
+}
+.service-breadcrumb a:hover { color: var(--gold-light); }
+.service-page-hero h1 {
+  margin: 0;
+  max-width: 820px;
+  color: #f4f2ed;
+  font-size: clamp(44px, 5.2vw, 70px);
+  line-height: 1.01;
+  letter-spacing: -.048em;
+  font-weight: 720;
+}
+.service-page-hero h1 span { color: var(--gold); }
+.service-page-lead {
+  max-width: 720px;
+  margin: 26px 0 0;
+  color: #a6aaae;
+  font-size: 17px;
+  line-height: 1.76;
+}
+.service-page-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.service-summary-card {
+  padding: 32px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 26px;
+  background: linear-gradient(145deg, rgba(255,255,255,.038), rgba(255,255,255,.016));
+}
+.service-summary-card > span {
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .18em;
+}
+.service-summary-card h2 {
+  margin: 14px 0 18px;
+  color: #f1efe9;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -.03em;
+}
+.service-summary-list {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.service-summary-list div {
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.service-summary-list div:last-child { border-bottom: 0; padding-bottom: 0; }
+.service-summary-list strong {
+  display: block;
+  color: #eceae4;
+  font-size: 13px;
+}
+.service-summary-list p {
+  margin: 5px 0 0;
+  color: #8e9398;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.service-content { padding: 96px 0; }
+.service-content + .service-content { border-top: 1px solid rgba(255,255,255,.07); }
+.service-intro-grid {
+  display: grid;
+  grid-template-columns: .78fr 1.22fr;
+  gap: 80px;
+  align-items: start;
+}
+.service-intro-grid h2,
+.service-related h2,
+.service-cta-box h2 {
+  margin: 0;
+  color: #f3f1ec;
+  font-size: clamp(32px, 4vw, 50px);
+  line-height: 1.08;
+  letter-spacing: -.04em;
+}
+.service-rich-text p {
+  margin: 0 0 18px;
+  color: #9ea3a7;
+  font-size: 15px;
+  line-height: 1.82;
+}
+.service-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 48px;
+}
+.service-detail-card {
+  min-height: 220px;
+  padding: 28px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 22px;
+  background: rgba(255,255,255,.022);
+}
+.service-detail-card > span {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  margin-bottom: 44px;
+  border: 1px solid rgba(184,146,79,.28);
+  border-radius: 50%;
+  color: var(--gold-light);
+  font-size: 10px;
+}
+.service-detail-card h3 {
+  margin: 0 0 10px;
+  color: #efede7;
+  font-size: 19px;
+  letter-spacing: -.02em;
+}
+.service-detail-card p {
+  margin: 0;
+  color: #92979c;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.service-signals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 34px;
+}
+.service-signal {
+  padding: 18px 20px;
+  border-left: 2px solid rgba(184,146,79,.55);
+  background: rgba(255,255,255,.02);
+  color: #aaaeb2;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.service-related { background: #080909; }
+.service-related-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+.service-related-links a {
+  padding: 10px 13px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 999px;
+  color: #b9bdc1;
+  font-size: 11px;
+  transition: .2s ease;
+}
+.service-related-links a:hover {
+  border-color: rgba(184,146,79,.4);
+  color: #edd699;
+  background: rgba(184,146,79,.06);
+}
+.service-cta-box {
+  padding: 46px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 28px;
+  background: linear-gradient(135deg, #0b0c0d, #151719);
+}
+.service-cta-box p {
+  max-width: 700px;
+  margin: 18px 0 0;
+  color: #9da2a6;
+  line-height: 1.75;
+}
+.service-page-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+.service-page-footer-links a:hover { color: var(--gold-light); }
+
+@media (max-width: 900px) {
+  .service-page-hero-grid,
+  .service-intro-grid { grid-template-columns: 1fr; gap: 38px; }
+  .service-page-hero { padding: 120px 0 70px; }
+}
+@media (max-width: 768px) {
+  .service-page-hero { padding: 104px 0 58px; }
+  .service-page-hero h1 { font-size: clamp(35px, 10vw, 48px); }
+  .service-page-lead { font-size: 15px; }
+  .service-page-actions { display: grid; grid-template-columns: 1fr; }
+  .service-page-actions .btn { width: 100%; }
+  .service-summary-card { padding: 24px 20px; border-radius: 20px; }
+  .service-content { padding: 70px 0; }
+  .service-detail-grid,
+  .service-signals { grid-template-columns: 1fr; }
+  .service-detail-card { min-height: 0; padding: 23px 20px; }
+  .service-detail-card > span { margin-bottom: 30px; }
+  .service-cta-box { padding: 28px 20px; border-radius: 20px; }
+  .service-hub-link-wrap { margin-top: 22px; }
+  .service-hub-link-wrap .btn { width: 100%; }
+}
