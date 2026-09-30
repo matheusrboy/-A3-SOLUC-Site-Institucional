@@ -11,12 +11,13 @@ const escapeXml = (value) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
 
-const buildSvg = () => {
+const buildSvg = (language = 'pt') => {
+  const en = language === 'en';
   const brand = escapeXml('A3 SOLUC');
-  const subtitle = escapeXml('Contabilidade & Soluções Empresariais');
+  const subtitle = escapeXml(en ? 'Accounting & Business Solutions' : 'Contabilidade & Soluções Empresariais');
   const location = escapeXml('São Bernardo do Campo • SP');
-  const services = escapeXml('Fiscal • Contábil • RH & DP • Paralegal • MEI • Imposto de Renda');
-  const promise = escapeXml('Atendimento próximo, rápido e eficaz');
+  const services = escapeXml(en ? 'Tax • Accounting • HR & Payroll • Corporate • MEI • Income Tax' : 'Fiscal • Contábil • RH & DP • Paralegal • MEI • Imposto de Renda');
+  const promise = escapeXml(en ? 'Close, fast and effective service' : 'Atendimento próximo, rápido e eficaz');
   const domain = escapeXml('a3soluccontabil.com.br');
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}">
@@ -67,7 +68,7 @@ const buildSvg = () => {
   </svg>`;
 };
 
-let cachedPng;
+const cachedPng = new Map();
 
 module.exports = async function handler(req, res) {
   if (!['GET', 'HEAD'].includes(req.method)) {
@@ -77,19 +78,24 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    if (!cachedPng) {
-      cachedPng = await sharp(Buffer.from(buildSvg()))
-        .png({ compressionLevel: 9, adaptiveFiltering: true })
-        .toBuffer();
+    const language = String(req.query?.lang || '').toLowerCase() === 'en' ? 'en' : 'pt';
+    if (!cachedPng.has(language)) {
+      cachedPng.set(
+        language,
+        await sharp(Buffer.from(buildSvg(language)))
+          .png({ compressionLevel: 9, adaptiveFiltering: true })
+          .toBuffer()
+      );
     }
+    const image = cachedPng.get(language);
 
     res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Content-Length', String(cachedPng.length));
+    res.setHeader('Content-Length', String(image.length));
     res.setHeader('Cache-Control', 'public, s-maxage=604800, stale-while-revalidate=2592000');
     res.setHeader('X-Content-Type-Options', 'nosniff');
 
     if (req.method === 'HEAD') return res.status(200).end();
-    return res.status(200).send(cachedPng);
+    return res.status(200).send(image);
   } catch (error) {
     res.setHeader('Cache-Control', 'no-store');
     return res.status(500).json({ error: 'Não foi possível gerar a imagem social.' });
