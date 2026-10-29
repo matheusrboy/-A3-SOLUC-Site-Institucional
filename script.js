@@ -5,16 +5,86 @@ const menuLinks = document.querySelectorAll('.main-nav a');
 const updateHeader = () => header.classList.toggle('scrolled', window.scrollY > 12);
 updateHeader();
 window.addEventListener('scroll', updateHeader, { passive: true });
-menuButton?.addEventListener('click', () => {
-const open = menu.classList.toggle('is-open');
-menuButton.setAttribute('aria-expanded', String(open));
-document.body.style.overflow = open ? 'hidden' : '';
+
+const mobileMenuMedia = window.matchMedia('(max-width: 900px)');
+let mobileMenuPreviousOverflow = '';
+let mobileMenuIsolated = [];
+const mobileMenuLabel = open => {
+const english = document.documentElement.lang.toLowerCase().startsWith('en');
+return open ? (english ? 'Close menu' : 'Fechar menu') : (english ? 'Open menu' : 'Abrir menu');
+};
+const mobileMenuFocusable = () => {
+if (!menuButton || !menu) return [];
+return [menuButton, ...menu.querySelectorAll('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+.filter(element => !element.hasAttribute('hidden'));
+};
+const isolateMobileMenuBackground = () => {
+if (!header || !mobileMenuMedia.matches) return;
+mobileMenuIsolated = [];
+[...document.body.children].forEach(element => {
+if (!(element instanceof HTMLElement) || element === header || element.tagName === 'SCRIPT' || element.tagName === 'STYLE') return;
+mobileMenuIsolated.push({ element, inert: element.inert, ariaHidden: element.getAttribute('aria-hidden') });
+element.inert = true;
+element.setAttribute('aria-hidden', 'true');
 });
-menuLinks.forEach(link => link.addEventListener('click', () => {
+};
+const restoreMobileMenuBackground = () => {
+mobileMenuIsolated.forEach(({ element, inert, ariaHidden }) => {
+element.inert = inert;
+if (ariaHidden === null) element.removeAttribute('aria-hidden');
+else element.setAttribute('aria-hidden', ariaHidden);
+});
+mobileMenuIsolated = [];
+};
+const openMobileMenu = () => {
+if (!menuButton || !menu || !mobileMenuMedia.matches || menu.classList.contains('is-open')) return;
+mobileMenuPreviousOverflow = document.body.style.overflow;
+menu.classList.add('is-open');
+menuButton.setAttribute('aria-expanded', 'true');
+menuButton.setAttribute('aria-label', mobileMenuLabel(true));
+document.body.style.overflow = 'hidden';
+isolateMobileMenuBackground();
+requestAnimationFrame(() => menu.querySelector('a[href]')?.focus());
+};
+const closeMobileMenu = ({ restoreFocus = true } = {}) => {
+if (!menuButton || !menu || !menu.classList.contains('is-open')) return;
+restoreMobileMenuBackground();
 menu.classList.remove('is-open');
-menuButton?.setAttribute('aria-expanded', 'false');
-document.body.style.overflow = '';
-}));
+menuButton.setAttribute('aria-expanded', 'false');
+menuButton.setAttribute('aria-label', mobileMenuLabel(false));
+document.body.style.overflow = mobileMenuPreviousOverflow;
+if (restoreFocus) menuButton.focus();
+};
+menuButton?.addEventListener('click', () => {
+if (!mobileMenuMedia.matches) return;
+if (menu?.classList.contains('is-open')) closeMobileMenu();
+else openMobileMenu();
+});
+menuLinks.forEach(link => link.addEventListener('click', () => closeMobileMenu({ restoreFocus: false })));
+document.addEventListener('keydown', event => {
+if (!mobileMenuMedia.matches || !menu?.classList.contains('is-open')) return;
+if (event.key === 'Escape') {
+event.preventDefault();
+closeMobileMenu();
+return;
+}
+if (event.key !== 'Tab') return;
+const focusable = mobileMenuFocusable();
+if (!focusable.length) return;
+const first = focusable[0];
+const last = focusable[focusable.length - 1];
+const active = document.activeElement;
+if (event.shiftKey && (active === first || !header?.contains(active))) {
+event.preventDefault();
+last.focus();
+} else if (!event.shiftKey && (active === last || !header?.contains(active))) {
+event.preventDefault();
+first.focus();
+}
+});
+mobileMenuMedia.addEventListener?.('change', event => {
+if (!event.matches && menu?.classList.contains('is-open')) closeMobileMenu({ restoreFocus: false });
+});
 const observer = new IntersectionObserver((entries) => {
 entries.forEach(entry => {
 if (entry.isIntersecting) {
