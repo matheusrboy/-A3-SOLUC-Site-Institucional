@@ -55,4 +55,21 @@ speakStart?.addEventListener('click',startSpeech);
 speakPause?.addEventListener('click',()=>{if(!speechSupported||!speechReading)return;if(speechPaused){window.speechSynthesis.resume();speechPaused=false;setStatus('Leitura retomada.')}else{window.speechSynthesis.pause();speechPaused=true;setStatus('Leitura pausada.')}updateButtons()});
 speakStop?.addEventListener('click',()=>{if(!speechSupported)return;clearTimer();window.speechSynthesis.cancel();finish('Leitura interrompida.')});
 window.addEventListener('beforeunload',()=>{if(!speechSupported)return;clearTimer();window.speechSynthesis.cancel()});updateButtons()
+
+const mobileMenuButton=document.querySelector('.menu-toggle');
+const mobileMenu=document.querySelector('.main-nav');
+const mobileHeader=document.querySelector('.site-header');
+if(mobileMenuButton&&mobileMenu&&mobileHeader&&!mobileMenu.dataset.a11yMenuReady){
+mobileMenu.dataset.a11yMenuReady='true';
+const mobileMedia=window.matchMedia('(max-width: 900px)');
+let menuPreviousOverflow='',menuIsolated=[];
+const menuItems=()=>[mobileMenuButton,...mobileMenu.querySelectorAll('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(el=>!el.hasAttribute('hidden'));
+const isolateMenu=()=>{if(!mobileMedia.matches)return;menuIsolated=[];[...document.body.children].forEach(el=>{if(!(el instanceof HTMLElement)||el===mobileHeader||el.tagName==='SCRIPT'||el.tagName==='STYLE')return;menuIsolated.push({el,inert:el.inert,ariaHidden:el.getAttribute('aria-hidden')});el.inert=true;el.setAttribute('aria-hidden','true')})};
+const restoreMenu=()=>{menuIsolated.forEach(({el,inert,ariaHidden})=>{el.inert=inert;if(ariaHidden===null)el.removeAttribute('aria-hidden');else el.setAttribute('aria-hidden',ariaHidden)});menuIsolated=[]};
+const syncMenu=()=>{const opened=mobileMedia.matches&&mobileMenu.classList.contains('is-open');mobileMenuButton.setAttribute('aria-expanded',String(opened));mobileMenuButton.setAttribute('aria-label',opened?'Fechar menu':'Abrir menu');if(opened){document.body.style.overflow='hidden';isolateMenu();requestAnimationFrame(()=>mobileMenu.querySelector('a[href]')?.focus())}else{restoreMenu();document.body.style.overflow=menuPreviousOverflow}};
+mobileMenuButton.addEventListener('click',()=>{if(mobileMedia.matches&&!mobileMenu.classList.contains('is-open'))menuPreviousOverflow=document.body.style.overflow;requestAnimationFrame(syncMenu)});
+mobileMenu.querySelectorAll('a[href]').forEach(link=>link.addEventListener('click',()=>{restoreMenu();mobileMenu.classList.remove('is-open');mobileMenuButton.setAttribute('aria-expanded','false');mobileMenuButton.setAttribute('aria-label','Abrir menu');document.body.style.overflow=menuPreviousOverflow}));
+document.addEventListener('keydown',event=>{if(!mobileMedia.matches||!mobileMenu.classList.contains('is-open'))return;if(event.key==='Escape'){event.preventDefault();restoreMenu();mobileMenu.classList.remove('is-open');mobileMenuButton.setAttribute('aria-expanded','false');mobileMenuButton.setAttribute('aria-label','Abrir menu');document.body.style.overflow=menuPreviousOverflow;mobileMenuButton.focus();return}if(event.key!=='Tab')return;const items=menuItems();if(!items.length)return;const first=items[0],last=items[items.length-1],active=document.activeElement;if(event.shiftKey&&(active===first||!mobileHeader.contains(active))){event.preventDefault();last.focus()}else if(!event.shiftKey&&(active===last||!mobileHeader.contains(active))){event.preventDefault();first.focus()}});
+mobileMedia.addEventListener?.('change',()=>{if(!mobileMedia.matches){restoreMenu();mobileMenu.classList.remove('is-open');mobileMenuButton.setAttribute('aria-expanded','false');mobileMenuButton.setAttribute('aria-label','Abrir menu');document.body.style.overflow=menuPreviousOverflow}});
+}
 })();
