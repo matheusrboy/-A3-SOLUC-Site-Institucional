@@ -72,3 +72,9 @@ Registro das principais decisões tomadas na construção do site institucional 
 ## Próximos passos
 - Revisar conteúdo final antes da publicação.
 - Se futuramente surgirem indicadores reais e validados, avaliar se complementam a seção sem substituir os diferenciais de atendimento.
+
+## V14 (prévia)
+- Adicionado o assistente de dúvidas (chat de perguntas frequentes, sem IA e sem custo por uso) em `chat.js`.
+- Botão na pilha de botões flutuantes; o painel só é montado no primeiro clique, sem peso no carregamento.
+- Respostas gerais em português e inglês, com encaminhamento ao WhatsApp e e-mail para casos específicos.
+- Carregado em todas as páginas, exceto a 404.
