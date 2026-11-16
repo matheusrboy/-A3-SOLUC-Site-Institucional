@@ -78,3 +78,8 @@ Registro das principais decisões tomadas na construção do site institucional 
 - Botão na pilha de botões flutuantes; o painel só é montado no primeiro clique, sem peso no carregamento.
 - Respostas gerais em português e inglês, com encaminhamento ao WhatsApp e e-mail para casos específicos.
 - Carregado em todas as páginas, exceto a 404.
+
+## V14.1
+- O assistente A3 abre sozinho ao entrar no site (desktop); no celular aparece um aviso curto ao lado do botão.
+- Se a pessoa fechar, ele não reabre sozinho nas outras páginas durante a mesma visita; o botão continua disponível.
+- A abertura automática não rouba o foco do teclado e espera cerca de 1 segundo após o carregamento.

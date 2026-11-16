@@ -21,7 +21,7 @@
       wa: 'Falar com a equipe no WhatsApp', mail: 'Enviar e-mail',
       fallback: 'Não encontrei uma resposta pronta para isso. Como pode depender do seu caso, o melhor é falar direto com a nossa equipe.',
       waText: 'Olá, vim pelo site da A3 SOLUC e tenho uma dúvida', waDoubt: '. Minha dúvida: ',
-      back: 'Ver outros temas', more: 'Saiba mais', other: 'Outro assunto',
+      back: 'Ver outros temas', more: 'Saiba mais', other: 'Outro assunto', teaser: 'Olá! Posso tirar suas dúvidas?', teaserClose: 'Dispensar aviso',
       quoteText: (n) => 'Olá, vim pelo site da A3 SOLUC e gostaria de um orçamento de ' + n + '.',
       quoteReply: (n) => 'Certo, ' + n + '. O valor depende do porte e das rotinas da sua empresa, então a equipe prepara um orçamento sob medida. Toque abaixo para chamar no WhatsApp com o serviço já indicado.', mailHref: 'https://mail.google.com/mail/?view=cm&fs=1&to=' + MAIL,
       svc: (s) => '/servicos/' + s, home: '/', cnpj: '/#consulta-cnpj'
@@ -34,7 +34,7 @@
       wa: 'Talk to the team on WhatsApp', mail: 'Send an email',
       fallback: 'I could not find a ready answer for that. Since it may depend on your case, the best step is to talk to our team directly.',
       waText: 'Hello, I came from the A3 SOLUC website and have a question', waDoubt: '. My question: ',
-      back: 'See other topics', more: 'Learn more', other: 'Something else',
+      back: 'See other topics', more: 'Learn more', other: 'Something else', teaser: 'Hi! Can I answer your questions?', teaserClose: 'Dismiss notice',
       quoteText: (n) => 'Hello, I came from the A3 SOLUC website and would like a quote for ' + n + '.',
       quoteReply: (n) => 'Got it, ' + n + '. The price depends on your company size and routines, so the team prepares a tailored quote. Tap below to message us on WhatsApp with the service already selected.', mailHref: 'https://mail.google.com/mail/?view=cm&fs=1&to=' + MAIL,
       svc: (s) => '/en/services/' + s, home: '/en/', cnpj: '/en/#consulta-cnpj'
@@ -118,6 +118,12 @@
 .a3c-trigger:focus-visible,.a3c-btn:focus-visible,.a3c-chip:focus-visible,.a3c-close:focus-visible,.a3c-input:focus-visible,.a3c-link:focus-visible{outline:3px solid rgba(213,188,124,.35);outline-offset:2px}
 .a3c-trigger svg{width:22px;height:22px;fill:none;stroke:#d5bc7c;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .a3c-trigger.a3c-low{bottom:84px}
+.a3c-teaser{position:fixed;z-index:381;display:flex;align-items:center;max-width:min(260px,calc(100vw - 100px));background:#17191b;color:#f2f1ed;border:1px solid rgba(213,188,124,.4);border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.45);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.a3c-teaser[hidden]{display:none}
+.a3c-teaser-open{flex:1;background:transparent;border:0;color:inherit;font:inherit;font-size:13.5px;line-height:1.35;text-align:left;padding:11px 4px 11px 14px;cursor:pointer}
+.a3c-teaser-x{flex:none;width:30px;height:30px;margin-right:4px;background:transparent;border:0;border-radius:50%;color:#9a9ea3;font-size:18px;line-height:1;cursor:pointer}
+.a3c-teaser-x:hover{color:#f2f1ed}
+.a3c-teaser-open:focus-visible,.a3c-teaser-x:focus-visible{outline:3px solid rgba(213,188,124,.35);outline-offset:2px}
 .a3c-panel{position:fixed;right:84px;bottom:20px;z-index:381;width:372px;max-width:calc(100vw - 104px);height:min(600px,calc(100dvh - 40px));display:flex;flex-direction:column;background:#0c0d0e;color:#f2f1ed;border:1px solid rgba(255,255,255,.12);border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.55);overflow:hidden;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .a3c-panel[hidden]{display:none}
 .a3c-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 16px 14px 18px;border-bottom:1px solid rgba(255,255,255,.08);background:#101112}
@@ -192,6 +198,10 @@ body.a11y-high-contrast .a3c-bot{background:#000;border-color:#fff}
   const setTriggerLabel = () => trigger.setAttribute('aria-label', S[lang()].open);
   setTriggerLabel();
 
+  const FLAG = 'a3-chat-dismissed';
+  const dismissed = () => { try { return sessionStorage.getItem(FLAG) === '1'; } catch (_) { return false; } };
+  const markDismissed = () => { try { sessionStorage.setItem(FLAG, '1'); } catch (_) {} };
+  let teaser = null;
   let panel, log, input, built = false, builtLang = null, lastQuestion = '', pendingMenu = false;
 
   const style = el('style'); style.textContent = CSS; document.head.appendChild(style);
@@ -321,17 +331,42 @@ body.a11y-high-contrast .a3c-bot{background:#000;border-color:#fff}
     built = true; builtLang = l;
   };
 
-  const openPanel = () => {
+  const openPanel = (focus = true) => {
+    hideTeaser();
     if (!built || builtLang !== lang()) build();
     panel.hidden = false; trigger.setAttribute('aria-expanded', 'true');
     setTriggerLabel();
     // No celular não foca o campo ao abrir (o teclado cobriria os temas); no desktop, foca para digitar direto.
+    if (!focus) return; // abertura automática: não rouba o foco de quem está lendo a página
     if (matchMedia('(pointer: coarse)').matches) { panel.tabIndex = -1; panel.focus({ preventScroll: true }); } else { input.focus({ preventScroll: true }); }
   };
   function closePanel() {
     if (!panel || panel.hidden) return;
-    panel.hidden = true; trigger.setAttribute('aria-expanded', 'false'); trigger.focus();
+    panel.hidden = true; trigger.setAttribute('aria-expanded', 'false'); markDismissed();
+    if (panel.contains(document.activeElement)) trigger.focus();
   }
+
+  function hideTeaser() { if (teaser) { teaser.remove(); teaser = null; } }
+  // Celular: um aviso curto ao lado do botão (o painel inteiro cobriria a página logo na chegada).
+  const showTeaser = () => {
+    const t = S[lang()];
+    teaser = el('div', 'a3c-teaser');
+    const open = el('button', 'a3c-teaser-open', t.teaser); open.type = 'button';
+    const x = el('button', 'a3c-teaser-x', '×'); x.type = 'button'; x.setAttribute('aria-label', t.teaserClose);
+    open.addEventListener('click', () => openPanel());
+    x.addEventListener('click', () => { hideTeaser(); markDismissed(); });
+    teaser.append(open, x); document.body.appendChild(teaser);
+    const r = trigger.getBoundingClientRect();
+    teaser.style.right = Math.round(innerWidth - r.left + 10) + 'px';
+    teaser.style.bottom = Math.round(innerHeight - r.bottom + (r.height - teaser.offsetHeight) / 2) + 'px';
+  };
+  // Ao abrir o site: desktop abre o assistente; celular mostra o aviso. Quem fechar não é incomodado de novo nesta visita.
+  const autoStart = () => {
+    if (dismissed() || (panel && !panel.hidden) || document.hidden) return;
+    if (matchMedia('(min-width: 769px)').matches) openPanel(false); else showTeaser();
+  };
+  const schedule = () => setTimeout(autoStart, 1200);
+  if (document.readyState === 'complete') schedule(); else addEventListener('load', schedule, { once: true });
 
   trigger.addEventListener('click', () => (panel && !panel.hidden ? closePanel() : openPanel()));
   // Se a pessoa trocar o idioma do site, o rótulo do botão acompanha; o painel se refaz na próxima abertura.
