@@ -21,7 +21,9 @@
       wa: 'Falar com a equipe no WhatsApp', mail: 'Enviar e-mail',
       fallback: 'Não encontrei uma resposta pronta para isso. Como pode depender do seu caso, o melhor é falar direto com a nossa equipe.',
       waText: 'Olá, vim pelo site da A3 SOLUC e tenho uma dúvida', waDoubt: '. Minha dúvida: ',
-      back: 'Ver outros temas', more: 'Saiba mais', mailHref: 'https://mail.google.com/mail/?view=cm&fs=1&to=' + MAIL,
+      back: 'Ver outros temas', more: 'Saiba mais', other: 'Outro assunto',
+      quoteText: (n) => 'Olá, vim pelo site da A3 SOLUC e gostaria de um orçamento de ' + n + '.',
+      quoteReply: (n) => 'Certo, ' + n + '. O valor depende do porte e das rotinas da sua empresa, então a equipe prepara um orçamento sob medida. Toque abaixo para chamar no WhatsApp com o serviço já indicado.', mailHref: 'https://mail.google.com/mail/?view=cm&fs=1&to=' + MAIL,
       svc: (s) => '/servicos/' + s, home: '/', cnpj: '/#consulta-cnpj'
     },
     en: {
@@ -32,10 +34,22 @@
       wa: 'Talk to the team on WhatsApp', mail: 'Send an email',
       fallback: 'I could not find a ready answer for that. Since it may depend on your case, the best step is to talk to our team directly.',
       waText: 'Hello, I came from the A3 SOLUC website and have a question', waDoubt: '. My question: ',
-      back: 'See other topics', more: 'Learn more', mailHref: 'https://mail.google.com/mail/?view=cm&fs=1&to=' + MAIL,
+      back: 'See other topics', more: 'Learn more', other: 'Something else',
+      quoteText: (n) => 'Hello, I came from the A3 SOLUC website and would like a quote for ' + n + '.',
+      quoteReply: (n) => 'Got it, ' + n + '. The price depends on your company size and routines, so the team prepares a tailored quote. Tap below to message us on WhatsApp with the service already selected.', mailHref: 'https://mail.google.com/mail/?view=cm&fs=1&to=' + MAIL,
       svc: (s) => '/en/services/' + s, home: '/en/', cnpj: '/en/#consulta-cnpj'
     }
   };
+
+  // Opções numeradas do menu de orçamento (n = número digitável)
+  const MENU = [
+    { pt: 'Fiscal', en: 'Tax', ps: 'fiscal', es: 'tax' },
+    { pt: 'Contábil', en: 'Accounting', ps: 'contabil', es: 'accounting' },
+    { pt: 'RH e Departamento Pessoal', en: 'HR and Payroll', ps: 'departamento-pessoal', es: 'hr-payroll' },
+    { pt: 'Abertura e alteração de empresa', en: 'Opening or changing a company', ps: 'paralegal-societario', es: 'corporate' },
+    { pt: 'MEI e pequenos negócios', en: 'MEI and small business', ps: 'mei-pequenos-negocios', es: 'mei-small-business' },
+    { pt: 'Imposto de Renda (pessoa física)', en: 'Individual income tax', ps: 'imposto-de-renda', es: 'income-tax' }
+  ];
 
   // Cada item: chip (rótulo do botão), keys (palavras para busca, sem acento), a (resposta), link (slug de serviço ou rota)
   const FAQ = {
@@ -61,7 +75,7 @@
       { id: 'cnpj', chip: 'O que é a consulta de CNPJ do site?', keys: ['consulta', 'consultar', 'pre-analise', 'pre analise', 'tarefas', 'cnpj', 'minha empresa', 'ferramenta'],
         a: 'É uma ferramenta do site: você informa o CNPJ, ela busca dados cadastrais públicos e mostra quais frentes a A3 pode revisar com a sua empresa. É uma pré-análise, não um diagnóstico definitivo.', link: ['#cnpj'] },
       { id: 'preco', chip: 'Quanto custa?', keys: ['preco', 'precos', 'valor', 'valores', 'custa', 'custo', 'quanto', 'orcamento', 'mensalidade', 'honorario', 'honorarios', 'cobram', 'cobranca', 'plano', 'planos'],
-        a: 'Os valores dependem do porte da empresa e das rotinas envolvidas, então não temos uma tabela única. Fale com a nossa equipe para receber um orçamento.', contact: true },
+        a: 'Os valores dependem do porte da empresa e das rotinas envolvidas, então não temos uma tabela única. Para qual serviço você quer um orçamento? Toque numa opção ou digite o número.', menu: true },
       { id: 'contato', chip: 'Onde fica e como falo com vocês?', keys: ['onde', 'endereco', 'fica', 'localizacao', 'mapa', 'contato', 'telefone', 'whatsapp', 'whats', 'email', 'e-mail', 'instagram', 'falar', 'chegar', 'sao bernardo'],
         a: 'Ficamos na Rua José Versolato, 111, Bloco B, Sala 1101, São Bernardo do Campo, SP, CEP 09750-730. WhatsApp: +55 11 91329-8952. E-mail: ' + MAIL + '. Instagram: @a3contabilidades.', contact: true },
       { id: 'especifico', hidden: true, keys: ['multa', 'devo', 'posso', 'preciso pagar', 'atrasado', 'atraso', 'divida', 'debito', 'processo', 'fiscalizacao', 'notificacao', 'deduzir', 'vale a pena', 'melhor regime', 'qual regime'],
@@ -89,7 +103,7 @@
       { id: 'cnpj', chip: 'What is the CNPJ lookup?', keys: ['lookup', 'check', 'cnpj', 'pre-analysis', 'tasks', 'tool'],
         a: 'It is a tool on the site: you enter the CNPJ, it fetches public registration data and shows which areas A3 can review with your company. It is a preliminary analysis, not a final diagnosis.', link: ['#cnpj'] },
       { id: 'preco', chip: 'How much does it cost?', keys: ['price', 'prices', 'cost', 'costs', 'fee', 'fees', 'how much', 'quote', 'budget', 'plan', 'plans', 'pricing'],
-        a: 'Fees depend on the company size and the routines involved, so there is no single price list. Talk to our team to get a quote.', contact: true },
+        a: 'Fees depend on the company size and the routines involved, so there is no single price list. Which service would you like a quote for? Tap an option or type the number.', menu: true },
       { id: 'contato', chip: 'Where are you and how do I reach you?', keys: ['where', 'address', 'location', 'map', 'contact', 'phone', 'whatsapp', 'email', 'instagram', 'reach', 'sao bernardo'],
         a: 'We are at Rua José Versolato, 111, Block B, Room 1101, São Bernardo do Campo, SP, Brazil, ZIP 09750-730. WhatsApp: +55 11 91329-8952. Email: ' + MAIL + '. Instagram: @a3contabilidades.', contact: true },
       { id: 'especifico', hidden: true, keys: ['fine', 'penalty', 'should i', 'can i', 'must i', 'overdue', 'debt', 'audit', 'notice', 'deduct', 'worth it', 'best regime', 'which regime'],
@@ -118,6 +132,11 @@
 .a3c-chips{display:flex;flex-wrap:wrap;gap:7px;padding:2px 0 4px}
 .a3c-chip{border:1px solid rgba(213,188,124,.34);background:transparent;color:#e6d5a6;font:inherit;font-size:13px;line-height:1.3;padding:7px 11px;border-radius:999px;cursor:pointer;text-align:left}
 .a3c-chip:hover{background:rgba(213,188,124,.1);border-color:rgba(213,188,124,.6)}
+.a3c-opts{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.a3c-opt{display:flex;align-items:center;gap:10px;width:100%;border:1px solid rgba(213,188,124,.34);background:transparent;color:#f2f1ed;font:inherit;font-size:13px;line-height:1.3;padding:8px 11px;border-radius:12px;cursor:pointer;text-align:left}
+.a3c-opt:hover{background:rgba(213,188,124,.1);border-color:rgba(213,188,124,.6)}
+.a3c-opt:focus-visible{outline:3px solid rgba(213,188,124,.35);outline-offset:2px}
+.a3c-opt b{flex:none;width:22px;height:22px;border-radius:50%;background:#b8924f;color:#14110a;display:grid;place-items:center;font-size:12px}
 .a3c-actions{display:flex;flex-direction:column;gap:7px;margin-top:10px}
 .a3c-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;padding:9px 14px;text-decoration:none;cursor:pointer;border:1px solid transparent}
 .a3c-btn-wa{background:#25D366;color:#06210f}
@@ -173,7 +192,7 @@ body.a11y-high-contrast .a3c-bot{background:#000;border-color:#fff}
   const setTriggerLabel = () => trigger.setAttribute('aria-label', S[lang()].open);
   setTriggerLabel();
 
-  let panel, log, input, built = false, builtLang = null, lastQuestion = '';
+  let panel, log, input, built = false, builtLang = null, lastQuestion = '', pendingMenu = false;
 
   const style = el('style'); style.textContent = CSS; document.head.appendChild(style);
   // Home tem a pilha completa (acessibilidade, idioma, WhatsApp); páginas internas só têm acessibilidade.
@@ -183,17 +202,17 @@ body.a11y-high-contrast .a3c-bot{background:#000;border-color:#fff}
   const scroll = () => { log.scrollTop = log.scrollHeight; };
   const say = (text, who) => { const m = el('div', 'a3c-msg a3c-' + who, text); log.appendChild(m); scroll(); return m; };
 
-  const waLink = () => {
+  const waLink = (custom) => {
     const t = S[lang()];
-    let text = t.waText;
-    if (lastQuestion) text += t.waDoubt + lastQuestion.slice(0, 220);
+    let text = custom || t.waText;
+    if (!custom && lastQuestion) text += t.waDoubt + lastQuestion.slice(0, 220);
     return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(/[.?!]$/.test(text) ? text : text + '.');
   };
 
-  const contactActions = (parent) => {
+  const contactActions = (parent, customWa) => {
     const t = S[lang()];
     const box = el('div', 'a3c-actions');
-    const wa = el('a', 'a3c-btn a3c-btn-wa', t.wa); wa.href = waLink(); wa.target = '_blank'; wa.rel = 'noopener';
+    const wa = el('a', 'a3c-btn a3c-btn-wa', t.wa); wa.href = waLink(customWa); wa.target = '_blank'; wa.rel = 'noopener';
     const mail = el('a', 'a3c-btn a3c-btn-ghost', t.mail); mail.href = t.mailHref; mail.target = '_blank'; mail.rel = 'noopener noreferrer';
     box.append(wa, mail); parent.appendChild(box);
   };
@@ -218,13 +237,58 @@ body.a11y-high-contrast .a3c-bot{background:#000;border-color:#fff}
       const a = el('a', 'a3c-link', t.more + ' →'); a.href = href;
       const row = el('div', 'a3c-actions'); row.appendChild(a); m.appendChild(row);
     }
+    pendingMenu = Boolean(item && item.menu);
+    if (pendingMenu) {
+      const list = el('div', 'a3c-opts'); list.setAttribute('role', 'group'); list.setAttribute('aria-label', l === 'en' ? 'Services' : 'Serviços');
+      MENU.forEach((o, i) => {
+        const b = el('button', 'a3c-opt'); b.type = 'button';
+        b.append(el('b', null, String(i + 1)), el('span', null, o[l]));
+        b.addEventListener('click', () => pick(i + 1));
+        list.appendChild(b);
+      });
+      const other = el('button', 'a3c-opt'); other.type = 'button';
+      other.append(el('b', null, String(MENU.length + 1)), el('span', null, t.other));
+      other.addEventListener('click', () => pick(MENU.length + 1));
+      list.appendChild(other); m.appendChild(list);
+      log.scrollTop = Math.max(0, m.offsetTop - 12); // mostra o início da pergunta junto com as opções
+      return;
+    }
     if (!item || item.contact) contactActions(m);
+    finishRow();
+  };
+
+  const finishRow = () => {
+    const t = S[lang()];
     const back = el('button', 'a3c-chip', t.back); back.type = 'button';
     back.addEventListener('click', () => { back.remove(); chips(); });
     const wrap = el('div', 'a3c-chips'); wrap.appendChild(back); log.appendChild(wrap); scroll();
   };
 
+  // Escolha de um serviço no menu de orçamento (n de 1 a MENU.length; o último número é "outro assunto")
+  const pick = (n) => {
+    const l = lang(), t = S[l];
+    pendingMenu = false;
+    log.querySelectorAll('.a3c-chips').forEach((c) => c.remove());
+    log.querySelectorAll('.a3c-opt').forEach((b) => { b.disabled = true; });
+    const opt = MENU[n - 1];
+    say(opt ? n + ' · ' + opt[l] : n + ' · ' + t.other, 'user');
+    lastQuestion = '';
+    const calm = document.documentElement.classList.contains('a11y-reduce-motion') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(() => {
+      if (!opt) { const m = say(t.fallback, 'bot'); contactActions(m); finishRow(); return; }
+      const m = say(t.quoteReply(opt[l]), 'bot');
+      contactActions(m, t.quoteText(opt[l]));
+      const href = l === 'en' ? '/en/services/' + opt.es : '/servicos/' + opt.ps;
+      const a = el('a', 'a3c-link', t.more + ' →'); a.href = href;
+      const row = el('div', 'a3c-actions'); row.appendChild(a); m.appendChild(row);
+      finishRow();
+    }, calm ? 0 : 350);
+  };
+
   const ask = (text, forced) => {
+    const num = /^\s*(\d)\s*[.)\-–]?\s*$/.exec(text);
+    if (pendingMenu && num && Number(num[1]) >= 1 && Number(num[1]) <= MENU.length + 1) { pick(Number(num[1])); return; }
+    pendingMenu = false;
     const l = lang();
     lastQuestion = forced ? '' : text;
     log.querySelectorAll('.a3c-chips').forEach((c) => c.remove());
