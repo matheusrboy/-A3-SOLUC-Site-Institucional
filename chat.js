@@ -1,7 +1,8 @@
-/* A3 SOLUC — Assistente de dúvidas (chat de perguntas frequentes, sem IA).
-   - Não envia nenhum dado para servidores: tudo roda no navegador.
-   - Só monta o painel quando a pessoa clica no botão (não pesa no carregamento).
-   - Respostas vêm do conteúdo do próprio site; casos específicos vão para a equipe. */
+/* A3 SOLUC — Assistente A3 (conversa com IA).
+   - As mensagens vão para /api/chat (função do próprio site), que consulta a IA e responde aos poucos.
+   - Se a IA estiver fora do ar ou sem chave configurada, o chat cai sozinho para o modo de perguntas frequentes
+     (respostas prontas, que rodam inteiras no navegador).
+   - O painel só é montado quando a pessoa clica (ou na abertura automática); nada é salvo no navegador além do aviso "fechei". */
 (() => {
   'use strict';
   if (window.__a3Chat) return;
@@ -14,7 +15,7 @@
   /* ---------- Conteúdo (revisar com o cliente antes de publicar) ---------- */
   const S = {
     pt: {
-      open: 'Tirar uma dúvida', title: 'Assistente A3', sub: 'Respostas rápidas sobre a A3 SOLUC',
+      open: 'Tirar uma dúvida', title: 'Assistente A3', sub: 'Converse com a nossa IA',
       close: 'Fechar assistente', placeholder: 'Escreva sua dúvida…', send: 'Enviar',
       hello: 'Olá! Sou o assistente da A3 SOLUC. Posso tirar dúvidas gerais sobre nossos serviços e como trabalhamos. Escolha um tema ou escreva sua pergunta.',
       note: 'Respostas gerais, sem análise do seu caso. Para orientação específica, nossa equipe atende você.',
@@ -22,12 +23,18 @@
       fallback: 'Não encontrei uma resposta pronta para isso. Como pode depender do seu caso, o melhor é falar direto com a nossa equipe.',
       waText: 'Olá, vim pelo site da A3 SOLUC e tenho uma dúvida', waDoubt: '. Minha dúvida: ',
       back: 'Ver outros temas', more: 'Saiba mais', other: 'Outro assunto', teaser: 'Olá! Posso tirar suas dúvidas?', teaserClose: 'Dispensar aviso',
+      helloAi: 'Olá! Sou o assistente de IA da A3 SOLUC. Me conta o que você precisa e eu te ajudo. Se preferir, escolha uma sugestão abaixo.',
+      noteAi: 'Assistente de IA: pode errar e não substitui a análise da nossa equipe. Não envie CPF, senhas ou dados bancários.', person: 'Falar com uma pessoa',
+      writing: 'O assistente está escrevendo', limited: 'Recebi muitas mensagens em pouco tempo. Para continuar agora, fale direto com a nossa equipe.',
+      errTail: 'Tive um problema para terminar a resposta. Se quiser, fale direto com a nossa equipe.',
+      turnLimit: 'Nossa conversa já está longa por aqui. Para seguir com o seu caso, o melhor é falar direto com a nossa equipe.',
+      starters: ['Quais serviços vocês oferecem?', 'Como abrir uma empresa?', 'Quanto custa?', 'Vocês atendem MEI?'],
       quoteText: (n) => 'Olá, vim pelo site da A3 SOLUC e gostaria de um orçamento de ' + n + '.',
       quoteReply: (n) => 'Certo, ' + n + '. O valor depende do porte e das rotinas da sua empresa, então a equipe prepara um orçamento sob medida. Toque abaixo para chamar no WhatsApp com o serviço já indicado.', mailHref: 'https://mail.google.com/mail/?view=cm&fs=1&to=' + MAIL,
       svc: (s) => '/servicos/' + s, home: '/', cnpj: '/#consulta-cnpj'
     },
     en: {
-      open: 'Ask a question', title: 'A3 Assistant', sub: 'Quick answers about A3 SOLUC',
+      open: 'Ask a question', title: 'A3 Assistant', sub: 'Chat with our AI',
       close: 'Close assistant', placeholder: 'Type your question…', send: 'Send',
       hello: 'Hello! I am the A3 SOLUC assistant. I can answer general questions about our services and how we work. Pick a topic or type your question.',
       note: 'General answers, not an analysis of your case. For specific guidance, our team will help you.',
@@ -35,6 +42,12 @@
       fallback: 'I could not find a ready answer for that. Since it may depend on your case, the best step is to talk to our team directly.',
       waText: 'Hello, I came from the A3 SOLUC website and have a question', waDoubt: '. My question: ',
       back: 'See other topics', more: 'Learn more', other: 'Something else', teaser: 'Hi! Can I answer your questions?', teaserClose: 'Dismiss notice',
+      helloAi: 'Hello! I am the A3 SOLUC AI assistant. Tell me what you need and I will help. Or pick a suggestion below.',
+      noteAi: 'AI assistant: it can make mistakes and does not replace our team analysis. Please do not send ID numbers, passwords or bank details.', person: 'Talk to a person',
+      writing: 'The assistant is typing', limited: 'I received many messages in a short time. To continue now, talk directly to our team.',
+      errTail: 'I had a problem finishing the answer. If you wish, talk directly to our team.',
+      turnLimit: 'Our conversation is getting long here. To continue with your case, the best step is to talk directly to our team.',
+      starters: ['What services do you offer?', 'How do I open a company?', 'How much does it cost?', 'Do you serve MEI?'],
       quoteText: (n) => 'Hello, I came from the A3 SOLUC website and would like a quote for ' + n + '.',
       quoteReply: (n) => 'Got it, ' + n + '. The price depends on your company size and routines, so the team prepares a tailored quote. Tap below to message us on WhatsApp with the service already selected.', mailHref: 'https://mail.google.com/mail/?view=cm&fs=1&to=' + MAIL,
       svc: (s) => '/en/services/' + s, home: '/en/', cnpj: '/en/#consulta-cnpj'
@@ -133,7 +146,7 @@
 .a3c-close:hover{border-color:rgba(213,188,124,.46)}
 .a3c-log{flex:1;overflow-y:auto;padding:16px 16px 6px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
 .a3c-msg{max-width:88%;padding:10px 13px;border-radius:16px;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
-.a3c-bot{align-self:flex-start;background:#17191b;border:1px solid rgba(255,255,255,.07);border-bottom-left-radius:5px}
+.a3c-bot{white-space:pre-wrap;align-self:flex-start;background:#17191b;border:1px solid rgba(255,255,255,.07);border-bottom-left-radius:5px}
 .a3c-user{align-self:flex-end;background:#b8924f;color:#14110a;border-bottom-right-radius:5px}
 .a3c-chips{display:flex;flex-wrap:wrap;gap:7px;padding:2px 0 4px}
 .a3c-chip{border:1px solid rgba(213,188,124,.34);background:transparent;color:#e6d5a6;font:inherit;font-size:13px;line-height:1.3;padding:7px 11px;border-radius:999px;cursor:pointer;text-align:left}
@@ -155,6 +168,14 @@
 .a3c-input::placeholder{color:#7d8186}
 .a3c-send{flex:none;border:0;border-radius:999px;background:#b8924f;color:#14110a;font:inherit;font-size:13px;font-weight:700;padding:0 16px;cursor:pointer}
 .a3c-send:hover{background:#d5bc7c}
+.a3c-typing{display:inline-flex;gap:4px;align-items:center;height:20px}
+.a3c-typing i{width:6px;height:6px;border-radius:50%;background:#9a9ea3;animation:a3cdot 1.2s infinite ease-in-out}
+.a3c-typing i:nth-child(2){animation-delay:.15s}.a3c-typing i:nth-child(3){animation-delay:.3s}
+@keyframes a3cdot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.a3c-typing i{animation:none;opacity:.7}}
+html.a11y-reduce-motion .a3c-typing i{animation:none;opacity:.7}
+.a3c-send:disabled{opacity:.55;cursor:default}
+.a3c-note a{color:#d5bc7c;text-underline-offset:3px}
 .a3c-note{margin:0;padding:6px 18px 14px;font-size:11.5px;line-height:1.4;color:#7d8186}
 @media (max-width:768px){
 .a3c-trigger.a3c-low{bottom:calc(74px + env(safe-area-inset-bottom))}
@@ -202,6 +223,9 @@ body.a11y-high-contrast .a3c-bot{background:#000;border-color:#fff}
   const dismissed = () => { try { return sessionStorage.getItem(FLAG) === '1'; } catch (_) { return false; } };
   const markDismissed = () => { try { sessionStorage.setItem(FLAG, '1'); } catch (_) {} };
   let teaser = null;
+  const ai = { history: [], busy: false, down: false, turns: 0 };
+  const MAX_TURNS = 14;
+  let sendBtn = null;
   let panel, log, input, built = false, builtLang = null, lastQuestion = '', pendingMenu = false;
 
   const style = el('style'); style.textContent = CSS; document.head.appendChild(style);
@@ -299,15 +323,106 @@ body.a11y-high-contrast .a3c-bot{background:#000;border-color:#fff}
     const num = /^\s*(\d)\s*[.)\-–]?\s*$/.exec(text);
     if (pendingMenu && num && Number(num[1]) >= 1 && Number(num[1]) <= MENU.length + 1) { pick(Number(num[1])); return; }
     pendingMenu = false;
-    const l = lang();
-    lastQuestion = forced ? '' : text;
     log.querySelectorAll('.a3c-chips').forEach((c) => c.remove());
     say(text, 'user');
+    legacyReply(text, forced);
+  };
+
+  // Resposta pronta (modo perguntas frequentes): usada quando a IA não está disponível.
+  const legacyReply = (text, forced) => {
+    const l = lang();
+    lastQuestion = forced ? '' : text;
     const item = forced || find(text, FAQ[l]);
     // pequena pausa só para dar ritmo de conversa (zerada com movimento reduzido)
     const calm = document.documentElement.classList.contains('a11y-reduce-motion') || matchMedia('(prefers-reduced-motion: reduce)').matches;
     setTimeout(() => answer(item), calm ? 0 : 350);
   };
+
+  /* ---------- Conversa com IA ---------- */
+  const cleanAi = (raw) => raw
+    .replace(/\[\[(?:WHATSAPP|ERROR)\]\]/g, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/^\s*[*•]\s+/gm, '- ')
+    .replace(/\s*\[{1,2}[A-Z]*\]?$/, '') // marcador ainda chegando
+    .trim();
+
+  const setBusy = (b) => { ai.busy = b; if (sendBtn) sendBtn.disabled = b; };
+
+  const typingDots = (t) => {
+    const d = el('span', 'a3c-typing'); d.setAttribute('role', 'img'); d.setAttribute('aria-label', t.writing);
+    d.append(el('i'), el('i'), el('i')); return d;
+  };
+
+  const starters = () => {
+    const t = S[lang()];
+    const wrap = el('div', 'a3c-chips'); wrap.setAttribute('role', 'group'); wrap.setAttribute('aria-label', t.title);
+    t.starters.forEach((q) => {
+      const b = el('button', 'a3c-chip', q); b.type = 'button';
+      b.addEventListener('click', () => { if (!ai.busy) send(q); });
+      wrap.appendChild(b);
+    });
+    log.appendChild(wrap); scroll();
+  };
+
+  const aiAsk = async (text) => {
+    const l = lang(), t = S[l];
+    log.querySelectorAll('.a3c-chips').forEach((c) => c.remove());
+    say(text, 'user');
+    lastQuestion = text;
+    ai.turns += 1;
+    if (ai.turns > MAX_TURNS) { contactActions(say(t.turnLimit, 'bot')); return; }
+    ai.history.push({ role: 'user', content: text });
+    setBusy(true);
+    const bubble = say('', 'bot');
+    bubble.setAttribute('aria-busy', 'true');
+    bubble.appendChild(typingDots(t));
+    let got = '';
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: ai.history.slice(-12), lang: l })
+      });
+      if (res.status === 429) {
+        ai.history.pop(); bubble.remove(); contactActions(say(t.limited, 'bot')); setBusy(false); return;
+      }
+      if (!res.ok || !res.body) throw new Error('ai_unavailable');
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        got += dec.decode(value, { stream: true });
+        const view = cleanAi(got);
+        if (view) { bubble.textContent = view; scroll(); }
+      }
+      got += dec.decode();
+    } catch (_) {
+      if (!cleanAi(got)) {
+        // Nada chegou: a IA está fora do ar. Responde com as perguntas frequentes e segue nesse modo.
+        ai.down = true; ai.history.pop(); ai.turns -= 1; bubble.remove(); setBusy(false);
+        legacyReply(text);
+        return;
+      }
+      got += '\n[[ERROR]]';
+    }
+    let finalText = cleanAi(got);
+    if (!finalText) {
+      ai.down = true; ai.history.pop(); ai.turns -= 1; bubble.remove(); setBusy(false);
+      legacyReply(text);
+      return;
+    }
+    const wantsTeam = /\[\[WHATSAPP\]\]/.test(got) || /\[\[ERROR\]\]/.test(got);
+    ai.history.push({ role: 'assistant', content: finalText });
+    if (/\[\[ERROR\]\]/.test(got)) finalText += '\n\n' + t.errTail;
+    bubble.textContent = finalText;
+    bubble.removeAttribute('aria-busy');
+    if (wantsTeam) contactActions(bubble);
+    setBusy(false);
+    scroll();
+  };
+
+  const send = (text) => (ai.down ? ask(text) : aiAsk(text));
 
   const build = () => {
     const l = lang(), t = S[l];
@@ -321,13 +436,17 @@ body.a11y-high-contrast .a3c-bot{background:#000;border-color:#fff}
     log = el('div', 'a3c-log'); log.setAttribute('role', 'log'); log.setAttribute('aria-live', 'polite');
     const form = el('form', 'a3c-form');
     input = el('input', 'a3c-input'); input.type = 'text'; input.maxLength = 300; input.placeholder = t.placeholder; input.setAttribute('aria-label', t.placeholder); input.autocomplete = 'off';
-    const send = el('button', 'a3c-send', t.send); send.type = 'submit';
-    form.append(input, send);
-    form.addEventListener('submit', (e) => { e.preventDefault(); const v = input.value.trim(); if (!v) return; input.value = ''; ask(v); });
-    panel.append(head, log, form, el('p', 'a3c-note', t.note));
+    const sendEl = el('button', 'a3c-send', t.send); sendEl.type = 'submit'; sendBtn = sendEl;
+    form.append(input, sendEl);
+    form.addEventListener('submit', (e) => { e.preventDefault(); const v = input.value.trim(); if (!v || ai.busy) return; input.value = ''; send(v); });
+    const note = el('p', 'a3c-note', (ai.down ? t.note : t.noteAi) + ' ');
+    const person = el('a', null, t.person); person.href = waLink(); person.target = '_blank'; person.rel = 'noopener';
+    note.appendChild(person);
+    panel.append(head, log, form, note);
     panel.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.stopPropagation(); closePanel(); } });
     document.body.appendChild(panel);
-    say(t.hello, 'bot'); chips();
+    ai.history = []; ai.turns = 0; ai.busy = false;
+    if (ai.down) { say(t.hello, 'bot'); chips(); } else { say(t.helloAi, 'bot'); starters(); }
     built = true; builtLang = l;
   };
 

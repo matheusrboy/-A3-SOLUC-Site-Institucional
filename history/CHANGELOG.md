@@ -83,3 +83,9 @@ Registro das principais decisões tomadas na construção do site institucional 
 - O assistente A3 abre sozinho ao entrar no site (desktop); no celular aparece um aviso curto ao lado do botão.
 - Se a pessoa fechar, ele não reabre sozinho nas outras páginas durante a mesma visita; o botão continua disponível.
 - A abertura automática não rouba o foco do teclado e espera cerca de 1 segundo após o carregamento.
+
+## V15 (prévia)
+- Assistente A3 agora conversa com IA (Claude) em vez de só responder perguntas prontas: `api/chat.js` recebe a conversa, consulta a IA e devolve a resposta aos poucos.
+- A chave fica só no servidor (variável `ANTHROPIC_API_KEY` na Vercel). Sem a chave, ou se a IA cair, o chat usa o modo de perguntas frequentes automaticamente.
+- Proteções: limite de mensagens por visitante, só aceita chamadas do próprio site, tamanho máximo de mensagem, resposta curta, instruções para não inventar valores nem dar parecer de caso específico, e encaminhamento ao WhatsApp.
+- Política de privacidade (PT e EN) atualizada para citar o assistente de IA.

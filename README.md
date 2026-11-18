@@ -58,3 +58,9 @@ A versão vigente corresponde ao trabalho consolidado até **29/09/2026 (V12.1)*
 
 ## Observação sobre resultados
 Os números reais de clientes, empresas abertas, regularizações e demais indicadores ainda serão validados antes de publicação. O site não deve exibir métricas quantitativas não confirmadas.
+
+## Assistente A3 (IA)
+- Front: `chat.js`. Servidor: `api/chat.js` (função da Vercel, streaming).
+- Variáveis de ambiente na Vercel: `ANTHROPIC_API_KEY` (obrigatória para a IA) e, opcionalmente, `ANTHROPIC_MODEL` (padrão `claude-haiku-5-5`).
+- Sem a chave, o chat funciona em modo de perguntas frequentes (sem IA).
+- Defina um limite mensal de gasto no painel da Anthropic.
